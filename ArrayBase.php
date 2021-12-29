@@ -6,6 +6,7 @@ use JetBrains\PhpStorm\Pure;
 
 /**
  * Контейнер для массива
+ * тест обновления
  */
 class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
     /**
