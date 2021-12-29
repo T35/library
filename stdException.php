@@ -34,16 +34,16 @@ class stdException extends \Exception {
                 }
                 //$format = 'win_cmd'
                 else {
-                    $message .= '\r\nMESSAGE ' . $message_num++ . 'r\n';
-                    $message .= 'CODE: ' . $throwable->getCode() . '\r\n';
-                    $message .= 'DIR: ' . ($CutFilePath ? str_replace($CutFilePath, '', $path_info['dirname']) : $path_info['dirname']) . '\r\n';
-                    $message .= 'FILE: ' . $path_info['basename'] . '\r\n';
-                    $message .= 'LINE: ' . $throwable->getLine() . '\r\n';
-                    $message .= 'MESSAGE: ' . $throwable->getMessage() . '\r\n';
-                    $message .= 'TRACE: ' . $throwable->getTraceAsString() . '\r\n';
+                    $message .= "\r\nMESSAGE " . $message_num++ . "\r\n";
+                    $message .= "CODE: " . $throwable->getCode() . "\r\n";
+                    $message .= "DIR: " . ($CutFilePath ? str_replace($CutFilePath, '', $path_info['dirname']) : $path_info['dirname']) . "\r\n";
+                    $message .= "FILE: " . $path_info['basename'] . "\r\n";
+                    $message .= "LINE: " . $throwable->getLine() . "\r\n";
+                    $message .= "MESSAGE: " . $throwable->getMessage() . "\r\n";
+                    $message .= "TRACE: " . $throwable->getTraceAsString() . "\r\n";
                     $message .= $throwable->value_with_error !== null ? 'VALUE: ' . print_r($throwable->value_with_error, true) : '';
-                    $message .= '\r\n';
-                    $message .= '\r\n';
+                    $message .= "\r\n";
+                    $message .= "\r\n";
                 }
 
                 $throwable = $throwable->getPrevious();
