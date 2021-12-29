@@ -254,16 +254,16 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      *
      * @param array|ArrayBase $array $array Входной массив, который предположительно содержит искомое значение.
      * @param mixed $key Ключ искомого значения во входном массиве.
-     * @param callable|ArrayBase $callback Callback-функция(или массив таких функций), которая принимает один аргумент: значение массива, и возвращает ответ в виде bool-значения.
+     * @param callable|ArrayBase|null $callback Callback-функция(или массив таких функций), которая принимает один аргумент: значение массива, и возвращает ответ в виде bool-значения.
      * @param bool $throw_exception Если true - выбрасывает исключение. Если false - возвращает null.
      * @return mixed
      * @throws stdException
      */
     public static function ValueInArray(
-        array|ArrayBase    $array,
-        mixed              $key,
-        callable|ArrayBase $callback,
-        bool               $throw_exception = true
+        array|ArrayBase         $array,
+        mixed                   $key,
+        callable|ArrayBase|null $callback,
+        bool                    $throw_exception = true
     ): mixed {
         if (!isset($array[$key])) {
             if ($throw_exception) {
@@ -277,7 +277,10 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
         }
 
         try {
-            return ValidatingMethods::Validated($array[$key], $callback);
+            if ($callback !== null)
+                return ValidatingMethods::Validated($array[$key], $callback, $throw_exception);
+            else
+                return $array[$key];
         }
         catch (stdException $exception) {
             throw new stdException('Значение "' . $key . '" массива не прошло проверку callback-функции', null, $exception);
@@ -289,16 +292,16 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * Если проверка не пройдена, выбрасывает исключение или возвращает null.
      *
      * @param mixed $key
-     * @param callable|ArrayBase $callback Callback-функция или ArrayBase-массив таких функций(по логике "И"). Можно использовать константы VM_ в качестве callback-функции.
+     * @param callable|ArrayBase|null $callback Callback-функция или ArrayBase-массив таких функций(по логике "И"). Можно использовать константы VM_ в качестве callback-функции.
      * @param bool $throw_exception Если true - выбрасывает исключение. Если false - возвращает null.
      * @return mixed
      * @throws stdException
      * @see ArrayBase::ValueInArray(), SimpleLibrary
      */
     public function getValid(
-        mixed              $key,
-        callable|ArrayBase $callback,
-        bool               $throw_exception = true
+        mixed                   $key,
+        callable|ArrayBase|null $callback,
+        bool                    $throw_exception = true
     ): mixed {
         try {
             return self::ValueInArray(
