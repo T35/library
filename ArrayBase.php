@@ -317,7 +317,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
                 [
                     'key' => $key,
                     'array' => $this->box,
-                    'callback' => $callback !== null
+                    'callback' => $callback ?? 'without callback'
                 ],
                 $exception
             );
