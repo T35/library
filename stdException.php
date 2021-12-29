@@ -9,8 +9,9 @@ class stdException extends \Exception {
     private mixed $value_with_error;
 
     public function View(
-        $DevMode = true,
-        $CutFilePath = false
+        bool   $DevMode = true,
+        bool   $CutFilePath = false,
+        string $format = 'html'
     ) {
         if ($DevMode == true) {
             $throwable = $this;
@@ -19,16 +20,31 @@ class stdException extends \Exception {
             while ($throwable !== null) {
                 $path_info = pathinfo($throwable->getFile());
 
-                $message .= '<br><b>MESSAGE ' . $message_num++ . '</b><br>';
-                $message .= 'CODE: <b>' . $throwable->getCode() . '</b><br>';
-                $message .= 'DIR: <b>' . ($CutFilePath ? str_replace($CutFilePath, '', $path_info['dirname']) : $path_info['dirname']) . '</b><br>';
-                $message .= 'FILE: <b>' . $path_info['basename'] . '</b><br>';
-                $message .= 'LINE: <b>' . $throwable->getLine() . '</b><br>';
-                $message .= 'MESSAGE: <b>' . $throwable->getMessage() . '</b><br>';
-                $message .= 'TRACE: ' . $throwable->getTraceAsString() . '<br>';
-                $message .= $throwable->value_with_error !== null ? 'VALUE: <b>' . SimpleLibrary::PreVarDump($throwable->value_with_error, false) : '';
-                $message .= '</b><br>';
-                $message .= '<br>';
+                if ($format == 'html') {
+                    $message .= '<br><b>MESSAGE ' . $message_num++ . '</b><br>';
+                    $message .= 'CODE: <b>' . $throwable->getCode() . '</b><br>';
+                    $message .= 'DIR: <b>' . ($CutFilePath ? str_replace($CutFilePath, '', $path_info['dirname']) : $path_info['dirname']) . '</b><br>';
+                    $message .= 'FILE: <b>' . $path_info['basename'] . '</b><br>';
+                    $message .= 'LINE: <b>' . $throwable->getLine() . '</b><br>';
+                    $message .= 'MESSAGE: <b>' . $throwable->getMessage() . '</b><br>';
+                    $message .= 'TRACE: ' . $throwable->getTraceAsString() . '<br>';
+                    $message .= $throwable->value_with_error !== null ? 'VALUE: <b>' . SimpleLibrary::PreVarDump($throwable->value_with_error, false) : '';
+                    $message .= '</b><br>';
+                    $message .= '<br>';
+                }
+                //$format = 'win_cmd'
+                else {
+                    $message .= '\r\nMESSAGE ' . $message_num++ . 'r\n';
+                    $message .= 'CODE: ' . $throwable->getCode() . '\r\n';
+                    $message .= 'DIR: ' . ($CutFilePath ? str_replace($CutFilePath, '', $path_info['dirname']) : $path_info['dirname']) . '\r\n';
+                    $message .= 'FILE: ' . $path_info['basename'] . '\r\n';
+                    $message .= 'LINE: ' . $throwable->getLine() . '\r\n';
+                    $message .= 'MESSAGE: ' . $throwable->getMessage() . '\r\n';
+                    $message .= 'TRACE: ' . $throwable->getTraceAsString() . '\r\n';
+                    $message .= $throwable->value_with_error !== null ? 'VALUE: ' . print_r($throwable->value_with_error, true) : '';
+                    $message .= '\r\n';
+                    $message .= '\r\n';
+                }
 
                 $throwable = $throwable->getPrevious();
             }
