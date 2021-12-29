@@ -5,7 +5,7 @@ namespace t35\Library;
 use JetBrains\PhpStorm\Pure;
 
 /**
- * Контейнер для массива
+ * Контейнер для массиваasd
  */
 class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
     /**
