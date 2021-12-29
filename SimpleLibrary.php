@@ -20,6 +20,37 @@ class SimpleLibrary {
     }
 
     /**
+     * Загрузка библиотек по логике Composer'а.
+     *
+     * @param string|null $autoloadPath Для загрузки библиотек, скаченных Composer'ом.
+     * @param ArrayBase|null $advancedDirs Папки, в которых находятся библиотеки, подготовленные для Composer'а. Например, находящиеся в разработке.
+     * Причем указанная папка может содержать множество вложенных библиотек. Данные папки это папки для функции glob с шаблоном поиска файлов composer.json.
+     * @return void
+     */
+    public static function ComposerLoad(string $autoloadPath = null, ArrayBase $advancedDirs = null): void {
+        if ($autoloadPath !== null) {
+            if (file_exists($autoloadPath)) {
+                include_once($autoloadPath);
+            }
+        }
+
+        if ($advancedDirs !== null) {
+            foreach ($advancedDirs as $advancedDir) {
+                $files = glob($advancedDir . "*/composer.json");
+                foreach ($files as $filename) {
+                    $composer_json = json_decode(file_get_contents($filename), true);
+                    $composer_files = $composer_json['autoload']['files'] ?? false;
+                    if ($composer_files && is_array($composer_files)) {
+                        foreach ($composer_files as $composer_file) {
+                            include_once dirname($filename) . DIRECTORY_SEPARATOR . $composer_file;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Определяет, можно ли считать массив ассоциативным.
      *
      * @param array|ArrayBase $arr
