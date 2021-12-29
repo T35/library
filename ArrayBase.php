@@ -260,10 +260,10 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * @throws stdException
      */
     public static function ValueInArray(
-        array|ArrayBase         $array,
-        mixed                   $key,
-        callable|ArrayBase|null $callback,
-        bool                    $throw_exception = true
+        array|ArrayBase    $array,
+        mixed              $key,
+        callable|ArrayBase $callback = null,
+        bool               $throw_exception = true
     ): mixed {
         if (!isset($array[$key])) {
             if ($throw_exception) {
@@ -299,9 +299,9 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * @see ArrayBase::ValueInArray(), SimpleLibrary
      */
     public function getValid(
-        mixed                   $key,
-        callable|ArrayBase|null $callback,
-        bool                    $throw_exception = true
+        mixed              $key,
+        callable|ArrayBase $callback = null,
+        bool               $throw_exception = true
     ): mixed {
         try {
             return self::ValueInArray(
