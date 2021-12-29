@@ -313,10 +313,11 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
         }
         catch (stdException $exception) {
             throw new stdException(
-                'Значение массива не прошло проверку callback-функции',
+                'Значение массива не прошло проверку',
                 [
                     'key' => $key,
-                    'array' => $this->box
+                    'array' => $this->box,
+                    'callback' => $callback !== null
                 ],
                 $exception
             );
