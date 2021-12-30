@@ -15,6 +15,8 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      */
     protected array $box = [];
 
+    protected bool $is_assoc = false;
+
     public function __construct(array|ArrayBase $value = null) {
         if ($value !== null)
             $this->putAll($value);
@@ -100,10 +102,16 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * @return void
      */
     public function offsetSet(mixed $offset, mixed $value): void {
-        if ($offset === null)
+        if ($offset === null) {
             $this->box[] = $value;
-        else
+        }
+        elseif (is_numeric($offset) && !$this->is_assoc) {
+            $this->box[] = $value;
+        }
+        else {
+            $this->is_assoc = true;
             $this->box[$offset] = $value;
+        }
     }
 
     /**

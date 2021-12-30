@@ -63,4 +63,8 @@ class SimpleLibrary {
         if ($arr === array()) return false;
         return \array_keys($arr) !== range(0, \count($arr) - 1);
     }
+
+//    public static function rglob(string $pattern, int $flags): ArrayBase {
+//
+//    }
 }
