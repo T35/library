@@ -78,9 +78,9 @@ class SimpleLibrary {
 
         $paths = glob($dir = dirname($pattern) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR | GLOB_NOSORT);
         $pattern_part = str_replace(dirname($pattern), '', $pattern);
-        echo $pattern_part, '<br>';
+//        echo $pattern_part, '<br>';
         foreach ($paths as $path) {
-            echo $path, '<br>';
+//            echo $path, '<br>';
             $result->putAll(self::rglob($path . $pattern_part, $flags));
         }
 
