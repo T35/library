@@ -71,7 +71,7 @@ class SimpleLibrary {
      * @param int $flags
      * @return ArrayBase
      */
-    public static function rglob(string $pattern, int $flags): ArrayBase {
+    public static function rglob(string $pattern, int $flags = 0): ArrayBase {
         $result = new ArrayBase();
 
         $result->putAll(glob($pattern, $flags));
