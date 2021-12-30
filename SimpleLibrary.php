@@ -64,7 +64,26 @@ class SimpleLibrary {
         return \array_keys($arr) !== range(0, \count($arr) - 1);
     }
 
-//    public static function rglob(string $pattern, int $flags): ArrayBase {
-//
-//    }
+    /**
+     * Рекурсивный glob.
+     *
+     * @param string $pattern
+     * @param int $flags
+     * @return ArrayBase
+     */
+    public static function rglob(string $pattern, int $flags): ArrayBase {
+        $result = new ArrayBase();
+
+        $result->putAll(glob($pattern, $flags));
+
+        $paths = glob($dir = dirname($pattern) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR | GLOB_NOSORT);
+        $pattern_part = str_replace(dirname($pattern), '', $pattern);
+        echo $pattern_part, '<br>';
+        foreach ($paths as $path) {
+            echo $path, '<br>';
+            $result->putAll(self::rglob($path . $pattern_part, $flags));
+        }
+
+        return $result;
+    }
 }
