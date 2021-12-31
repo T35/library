@@ -74,14 +74,14 @@ class SimpleLibrary {
     public static function rglob(string $pattern, int $flags = 0): ArrayBase {
         $result = new ArrayBase();
 
-        $result->putAll(glob($pattern, $flags));
+        $result->putAll(glob($pattern, $flags), false);
 
         $paths = glob($dir = dirname($pattern) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR | GLOB_NOSORT);
         $pattern_part = str_replace(dirname($pattern), '', $pattern);
 //        echo $pattern_part, '<br>';
         foreach ($paths as $path) {
 //            echo $path, '<br>';
-            $result->putAll(self::rglob($path . $pattern_part, $flags));
+            $result->putAll(self::rglob($path . $pattern_part, $flags), false);
         }
 
         return $result;

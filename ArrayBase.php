@@ -15,8 +15,6 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      */
     protected array $box = [];
 
-    protected bool $is_assoc = false;
-
     public function __construct(array|ArrayBase $value = null) {
         if ($value !== null)
             $this->putAll($value);
@@ -105,11 +103,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
         if ($offset === null) {
             $this->box[] = $value;
         }
-        elseif (is_numeric($offset) && !$this->is_assoc) {
-            $this->box[] = $value;
-        }
         else {
-            $this->is_assoc = true;
             $this->box[$offset] = $value;
         }
     }
@@ -151,11 +145,12 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * Добавление элементов из другого массива или объекта ArrayBase.
      *
      * @param array|ArrayBase $value
+     * @param bool $use_keys
      * @return void
      */
-    public function putAll(array|ArrayBase $value): void {
+    public function putAll(array|ArrayBase $value, bool $use_keys = true): void {
         foreach ($value as $key => $item) {
-            $this->offsetSet($key, $item);
+            $this->offsetSet($use_keys ? $key : null, $item);
         }
     }
 
