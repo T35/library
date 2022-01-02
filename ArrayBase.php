@@ -130,14 +130,15 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * Безопасный offsetGet. Если переданного ключа массива не существует, вернет null.
      *
      * @param mixed $offset
+     * @param mixed|null $failed_value Возвращает это значение в случае неудачи.
      * @return mixed
      */
-    public function getSafe(mixed $offset): mixed {
+    public function getSafe(mixed $offset, mixed $failed_value = null): mixed {
         try {
             return $this->offsetGet($offset);
         }
         catch (\OutOfBoundsException $exception) {
-            return null;
+            return $failed_value;
         }
     }
 
@@ -255,7 +256,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * Проверят значение массива на наличие и соответствие условиям в callback-функции.
      * Если проверка не пройдена, выбрасывает исключение или возвращает null.
      *
-     * @param array|ArrayBase $array $array Входной массив, который предположительно содержит искомое значение.
+     * @param ArrayBase $array |ArrayBase $array $array Входной массив, который предположительно содержит искомое значение.
      * @param mixed $key Ключ искомого значения во входном массиве.
      * @param callable|ArrayBase|null $callback Callback-функция(или массив таких функций), которая принимает один аргумент: значение массива, и возвращает ответ в виде bool-значения.
      * @param bool $throw_exception Если true - выбрасывает исключение. Если false - возвращает null.
@@ -263,16 +264,21 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * @throws stdException
      */
     public static function ValueInArray(
-        array|ArrayBase    $array,
+        ArrayBase          $array,
         mixed              $key,
         callable|ArrayBase $callback = null,
         bool               $throw_exception = true
     ): mixed {
-        if (!isset($array[$key])) {
+        try {
+            $value = $array[$key];
+        }
+        catch (\OutOfBoundsException $exception) {
             if ($throw_exception) {
                 throw new stdException(
-                    'Значение "' . $key . '" отсутствует в массиве',
-                    $array
+                    $exception->getMessage(),
+                    $array,
+                    null,
+                    $exception->getCode()
                 );
             }
 
@@ -281,9 +287,9 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
 
         try {
             if ($callback !== null)
-                return ValidatingMethods::Validated($array[$key], $callback, $throw_exception);
+                return ValidatingMethods::Validated($value, $callback, $throw_exception);
             else
-                return $array[$key];
+                return $value;
         }
         catch (stdException $exception) {
             throw new stdException('Значение "' . $key . '" массива не прошло проверку callback-функции', null, $exception);

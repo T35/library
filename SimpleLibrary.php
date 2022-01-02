@@ -1,4 +1,5 @@
 <?php
+
 namespace t35\Library;
 
 use ArrayAccess;
@@ -15,6 +16,25 @@ class SimpleLibrary {
 
         if ($echo)
             echo $content;
+
+        return $content;
+    }
+
+    /**
+     * @param mixed $var
+     * @param EStringFormat $format
+     * @return StringBase
+     * @throws stdException
+     */
+    public static function GetVarDump(mixed $var, EStringFormat $format = EStringFormat::HTML): StringBase {
+        ob_start();
+        var_dump($var);
+        $content = new StringBase(ob_get_contents());
+        ob_end_clean();
+
+        if ($format == EStringFormat::HTML) {
+            $content->Prefix(StringBase::Inst('<pre>'))->Postfix(StringBase::Inst('</pre>'));
+        }
 
         return $content;
     }
@@ -49,7 +69,7 @@ class SimpleLibrary {
      * @param array|ArrayBase $arr
      * @return bool
      */
-    #[Pure]public static function is_assoc(array|ArrayAccess $arr): bool {
+    #[Pure] public static function is_assoc(array|ArrayAccess $arr): bool {
         if ($arr instanceof ArrayBase) {
             if (\count($arr) == 0) return false;
             return array_keys($arr) !== range(0, \count($arr) - 1);

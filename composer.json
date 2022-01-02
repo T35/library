@@ -28,7 +28,9 @@
       "ListString.php",
       "ArrayTyped.php",
       "MapSimpleTyped.php",
-      "ListTyped.php"
+      "ListTyped.php",
+      "StringBase.php",
+      "EStringFormat.php"
     ]
   }
 }
