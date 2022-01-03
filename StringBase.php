@@ -2,7 +2,9 @@
 
 namespace t35\Library;
 
-class StringBase {
+use JetBrains\PhpStorm\Pure;
+
+class StringBase implements IJSONSerializable {
     protected string $string;
 
     /**
@@ -14,6 +16,36 @@ class StringBase {
         mixed $value = '',
         protected EStringFormat $format = EStringFormat::None
     ) {
+        $this->Set($value);
+    }
+
+    public function Get(): string {
+        return $this->string;
+    }
+
+    #[Pure] public function __toString(): string {
+        return $this->Get();
+    }
+
+    /**
+     * Возвращает реализацию класса.
+     *
+     * @param mixed $value
+     * @return static
+     * @throws stdException
+     */
+    public static function Inst(mixed $value): static {
+        return new static($value);
+    }
+
+    /**
+     * Сеттер для строки.
+     *
+     * @param mixed $value
+     * @return StringBase
+     * @throws stdException
+     */
+    public function Set(mixed $value): static {
         try {
             $this->string = $value;
         }
@@ -25,42 +57,57 @@ class StringBase {
                 $exception->getCode()
             );
         }
-    }
 
-    public function __toString(): string {
-        return $this->string;
-    }
-
-    /**
-     * Возвращает реализацию класса.
-     *
-     * @param mixed $value
-     * @return static
-     * @throws stdException
-     */
-    public static function Inst(mixed $value): static {
-        return new StringBase($value);
+        return $this;
     }
 
     /**
      * Добавляет текст слева.
      *
-     * @param StringBase $stringBase
+     * @param mixed $value
      * @return $this
+     * @throws stdException
      */
-    public function Prefix(StringBase $stringBase): static {
-        $this->string = $stringBase . $this->string;
+    public function Prefix(mixed $value): static {
+        try {
+            $this->string = $value . $this->string;
+        }
+        catch (\TypeError $exception) {
+            throw new stdException(
+                $exception->getMessage(),
+                $value,
+                null,
+                $exception->getCode()
+            );
+        }
+
         return $this;
     }
 
     /**
      * Добавляет текст справа.
      *
-     * @param StringBase $stringBase
+     * @param mixed $value
      * @return $this
+     * @throws stdException
      */
-    public function Postfix(StringBase $stringBase): static {
-        $this->string .= $stringBase;
+    public function Postfix(mixed $value): static {
+        try {
+            $this->string .= $value;
+        }
+        catch (\TypeError $exception) {
+            throw new stdException(
+                $exception->getMessage(),
+                $value,
+                null,
+                $exception->getCode()
+            );
+        }
+
         return $this;
+    }
+
+    #[Pure] public function JSONSerialize(): string {
+        return $this->Get();
     }
 }

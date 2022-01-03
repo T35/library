@@ -7,7 +7,7 @@ use JetBrains\PhpStorm\Pure;
 /**
  * Контейнер для массива
  */
-class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
+class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializable {
     /**
      * Собственно, контейнер для данных массива.
      *
@@ -28,6 +28,16 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      *
      */
     public function similar(array|ArrayBase $value = null): static {
+        return new static($value);
+    }
+
+    /**
+     * Возвращает реализацию класса.
+     *
+     * @param mixed $value
+     * @return static
+     */
+    public static function Inst(mixed $value): static {
         return new static($value);
     }
 
@@ -225,12 +235,24 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * Применяет callback-функцию ко всем элементам массива.
      *
      * @param callable $callback Должен принимать два параметра: 1 - ключ, 2 - значение.
-     * @return void
+     * @return static
      */
-    public function apply(callable $callback): void {
+    public function apply(callable $callback): static {
         foreach ($this->box as $key => $value) {
             $this->box[$key] = $callback($key, $value);
         }
+
+        return $this;
+    }
+
+    /**
+     * Возвращает копию массива с примененной ко всем значениям callback-функцией.
+     *
+     * @param callable $callback
+     * @return $this
+     */
+    public function map(callable $callback): static {
+        return $this->similar($this->box)->apply($callback);
     }
 
     /**
@@ -253,6 +275,53 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
     }
 
     /**
+     * Возвращает массив в виде var_dump-строки в нужном формате.
+     *
+     * @param EStringFormat $format
+     * @return string
+     * @throws stdException
+     */
+    public function toVarDump(EStringFormat $format = EStringFormat::None): string {
+        return SimpleLibrary::GetVarDump($this->box, $format);
+    }
+
+    /**
+     * Реализация IJSONSerializable
+     *
+     * @return array
+     * @see IJSONSerializable
+     */
+    public function JSONSerialize(): array {
+        return $this->map(
+            function ($key, $value) {
+                if ($value instanceof IJSONSerializable) {
+                    return $value->JSONSerialize();
+                }
+                return $value;
+            }
+        )->toArray();
+    }
+
+    /**
+     * Возвращает реализацию массива в виде JSON-строки.
+     *
+     * @return string
+     */
+    public function toJSON(): string {
+        return json_encode($this->JSONSerialize(), JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * Реализация __toString().
+     *
+     * @return string
+     * @see IJSONSerializable
+     */
+    public function __toString(): string {
+        return $this->toJSON();
+    }
+
+    /**
      * Проверят значение массива на наличие и соответствие условиям в callback-функции.
      * Если проверка не пройдена, выбрасывает исключение или возвращает null.
      *
@@ -264,10 +333,10 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * @throws stdException
      */
     public static function ValueInArray(
-        ArrayBase          $array,
-        mixed              $key,
-        callable|ArrayBase $callback = null,
-        bool               $throw_exception = true
+        ArrayBase                $array,
+        mixed                    $key,
+        false|callable|ArrayBase $callback = false,
+        bool                     $throw_exception = true
     ): mixed {
         try {
             $value = $array[$key];
@@ -286,7 +355,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
         }
 
         try {
-            if ($callback !== null)
+            if ($callback !== false)
                 return ValidatingMethods::Validated($value, $callback, $throw_exception);
             else
                 return $value;
@@ -301,16 +370,16 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable {
      * Если проверка не пройдена, выбрасывает исключение или возвращает null.
      *
      * @param mixed $key
-     * @param callable|ArrayBase|null $callback Callback-функция или ArrayBase-массив таких функций(по логике "И"). Можно использовать константы VM_ в качестве callback-функции.
+     * @param false|callable|ArrayBase $callback Callback-функция или ArrayBase-массив таких функций(по логике "И"). Можно использовать константы VM_ в качестве callback-функции.
      * @param bool $throw_exception Если true - выбрасывает исключение. Если false - возвращает null.
      * @return mixed
      * @throws stdException
      * @see ArrayBase::ValueInArray(), SimpleLibrary
      */
     public function getValid(
-        mixed              $key,
-        callable|ArrayBase $callback = null,
-        bool               $throw_exception = true
+        mixed                    $key,
+        false|callable|ArrayBase $callback = false,
+        bool                     $throw_exception = true
     ): mixed {
         try {
             return self::ValueInArray(

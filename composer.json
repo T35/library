@@ -22,6 +22,7 @@
       "ValidatingMethods.php",
       "CallbackValueInList.php",
       "CallbackRegExp.php",
+      "IJSONSerializable.php",
       "ArrayBase.php",
       "MapSimple.php",
       "ListSimple.php",
