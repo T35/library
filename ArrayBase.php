@@ -137,22 +137,6 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializabl
     }
 
     /**
-     * Безопасный offsetGet. Если переданного ключа массива не существует, вернет null.
-     *
-     * @param mixed $offset
-     * @param mixed|null $failed_value Возвращает это значение в случае неудачи.
-     * @return mixed
-     */
-    public function getSafe(mixed $offset, mixed $failed_value = null): mixed {
-        try {
-            return $this->offsetGet($offset);
-        }
-        catch (\OutOfBoundsException $exception) {
-            return $failed_value;
-        }
-    }
-
-    /**
      * Добавление элементов из другого массива или объекта ArrayBase.
      *
      * @param array|ArrayBase $value
@@ -327,7 +311,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializabl
      *
      * @param ArrayBase $array |ArrayBase $array $array Входной массив, который предположительно содержит искомое значение.
      * @param mixed $key Ключ искомого значения во входном массиве.
-     * @param callable|ArrayBase|null $callback Callback-функция(или массив таких функций), которая принимает один аргумент: значение массива, и возвращает ответ в виде bool-значения.
+     * @param false|callable|ArrayBase $callback Callback-функция(или массив таких функций), которая принимает один аргумент: значение массива, и возвращает ответ в виде bool-значения.
      * @param bool $throw_exception Если true - выбрасывает исключение. Если false - возвращает null.
      * @return mixed
      * @throws stdException
@@ -433,5 +417,39 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializabl
             );
 
         return $new;
+    }
+
+    /**
+     * Безопасный offsetGet. Если переданного ключа массива не существует, вернет $failed_value.
+     *
+     * @param mixed $offset
+     * @param mixed|null $failed_value Возвращает это значение в случае неудачи.
+     * @return mixed
+     */
+    public function getSafe(mixed $offset, mixed $failed_value = null): mixed {
+        try {
+            return $this->offsetGet($offset);
+        }
+        catch (\OutOfBoundsException $exception) {
+            return $failed_value;
+        }
+    }
+
+    /**
+     * Безопасный getValid. Если проверка не пройдена, вернет $failed_value.
+     *
+     * @see getValid()
+     * @param mixed $key
+     * @param false|callable|ArrayBase $callback
+     * @param bool $failed_value Возвращает это значение в случае неудачи.
+     * @return mixed
+     * @throws stdException
+     */
+    public function getValidSafe(
+        mixed $key,
+        false|callable|ArrayBase $callback = false,
+        bool $failed_value = null
+    ): mixed {
+        return $this->getValid($key, $callback, false) ?? $failed_value;
     }
 }
