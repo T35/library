@@ -2,12 +2,14 @@
 
 namespace t35\Library;
 
+use t35\Library\Callback;
+
 class ValidatingMethods {
     /**
      * Константы VM_(Validating Method) это callback-функции для проверки значения.
      * @see ArrayBase::getValid(), SimpleLibrary::Validated()
      * В качестве callback-функций также можно передать объекты:
-     * @see CallbackValueInList, CallbackRegExp
+     * @see Callback\CallbackValueInList, Callback\CallbackRegExp
      */
     public const VM_SYSTEM_NAME = [ValidatingMethods::class, 'isSystemName'];
     public const VM_NOT_EMPTY_ARRAY = [ValidatingMethods::class, 'isNotEmptyArray'];

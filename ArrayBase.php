@@ -2,12 +2,17 @@
 
 namespace t35\Library;
 
+use ArrayAccess;
+use Countable;
+use Iterator;
 use JetBrains\PhpStorm\Pure;
+use OutOfBoundsException;
+use t35\Library\Callback;
 
 /**
  * Контейнер для массива
  */
-class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializable {
+class ArrayBase implements Iterator, ArrayAccess, Countable, IJSONSerializable {
     /**
      * Собственно, контейнер для данных массива.
      *
@@ -99,7 +104,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializabl
      * @return mixed
      */
     public function offsetGet(mixed $offset): mixed {
-        return $this->box[$offset] ?? throw new \OutOfBoundsException('Ключ "' . $offset . '" отсутствует в массиве');
+        return $this->box[$offset] ?? throw new OutOfBoundsException('Ключ "' . $offset . '" отсутствует в массиве');
     }
 
     /**
@@ -207,7 +212,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializabl
      * @return static
      */
     public function filterByList(ListSimple $list, bool $strict = false): static {
-        $callbackInList = new CallbackValueInList($list);
+        $callbackInList = new Callback\CallbackValueInList($list);
         $new = $this->filter($callbackInList, ARRAY_FILTER_USE_KEY);
         if ($strict)
             return $list->count() == $new->count() ? $new : $this->similar();
@@ -325,7 +330,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializabl
         try {
             $value = $array[$key];
         }
-        catch (\OutOfBoundsException $exception) {
+        catch (OutOfBoundsException $exception) {
             if ($throw_exception) {
                 throw new stdException(
                     $exception->getMessage(),
@@ -430,7 +435,7 @@ class ArrayBase implements \Iterator, \ArrayAccess, \Countable, IJSONSerializabl
         try {
             return $this->offsetGet($offset);
         }
-        catch (\OutOfBoundsException $exception) {
+        catch (OutOfBoundsException $exception) {
             return $failed_value;
         }
     }
