@@ -27,7 +27,7 @@ class ArrayTyped extends ArrayBase {
      * @param class-string<T> $classOfObjects
      */
     public function __construct(
-        public readonly string $classOfObjects,
+        protected string $classOfObjects,
         array|ArrayBase $value = null
     ) {
         parent::__construct($value);

@@ -3,6 +3,7 @@
 namespace t35\Library;
 
 use JetBrains\PhpStorm\Pure;
+use TypeError;
 
 class StringBase implements IJSONSerializable {
     protected string $string;
@@ -19,6 +20,21 @@ class StringBase implements IJSONSerializable {
         $this->Set($value);
     }
 
+    /**
+     * Преобразование значения в объект StringBase static класса.
+     * Например, параметры типа string вначале всех методов, для удобства, нужно преобразовать в объект StringBase static класса.
+     *
+     * @param mixed $value
+     * @param EStringFormat $format
+     * @return void
+     * @throws stdException
+     */
+    public static function Converse(mixed &$value, EStringFormat $format = EStringFormat::None): void {
+        if (!($value instanceof StringBase)) {
+            $value = new static($value, $format);
+        }
+    }
+
     public function Get(): string {
         return $this->string;
     }
@@ -28,14 +44,23 @@ class StringBase implements IJSONSerializable {
     }
 
     /**
-     * Возвращает реализацию класса.
+     * Геттер поля $format.
      *
-     * @param mixed $value
-     * @return static
-     * @throws stdException
+     * @return EStringFormat
      */
-    public static function Inst(mixed $value): static {
-        return new static($value);
+    public function format(): EStringFormat {
+        return $this->format;
+    }
+
+    /**
+     * Сеттер поля $format.
+     *
+     * @param EStringFormat $format
+     * @return StringBase
+     */
+    public function SetFormat(EStringFormat $format): static {
+        $this->format = $format;
+        return $this;
     }
 
     /**
@@ -49,7 +74,7 @@ class StringBase implements IJSONSerializable {
         try {
             $this->string = $value;
         }
-        catch (\TypeError $exception) {
+        catch (TypeError $exception) {
             throw new stdException(
                 $exception->getMessage(),
                 $value,
@@ -72,7 +97,7 @@ class StringBase implements IJSONSerializable {
         try {
             $this->string = $value . $this->string;
         }
-        catch (\TypeError $exception) {
+        catch (TypeError $exception) {
             throw new stdException(
                 $exception->getMessage(),
                 $value,
@@ -95,7 +120,7 @@ class StringBase implements IJSONSerializable {
         try {
             $this->string .= $value;
         }
-        catch (\TypeError $exception) {
+        catch (TypeError $exception) {
             throw new stdException(
                 $exception->getMessage(),
                 $value,
@@ -109,5 +134,9 @@ class StringBase implements IJSONSerializable {
 
     #[Pure] public function JSONSerialize(): string {
         return $this->Get();
+    }
+
+    public function WithLineBreak(): string {
+        return $this->Get() . $this->format()->LineBreak();
     }
 }

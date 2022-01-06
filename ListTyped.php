@@ -8,13 +8,6 @@ use JetBrains\PhpStorm\Pure;
  * @template T
  */
 class ListTyped extends ArrayTyped {
-    /**
-     * Реализация $box с измененным PHPDoc.
-     *
-     * @var array<int, T>
-     */
-    protected array $box = [];
-
     public function offsetSet(mixed $offset, mixed $value): void {
         if (!($value instanceof $this->classOfObjects)) {
             throw new \InvalidArgumentException(
@@ -23,14 +16,5 @@ class ListTyped extends ArrayTyped {
         }
 
         parent::offsetSet(null, $value);
-    }
-
-    /**
-     * Возвращает последний элемент списка.
-     *
-     * @return T
-     */
-    #[Pure] public function last(): mixed {
-        return $this->box[$this->count() - 1];
     }
 }

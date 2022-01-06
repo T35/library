@@ -33,7 +33,7 @@ class SimpleLibrary {
         ob_end_clean();
 
         if ($format == EStringFormat::HTML) {
-            $content->Prefix(StringBase::Inst('<pre>'))->Postfix(StringBase::Inst('</pre>'));
+            $content->Prefix(new StringBase('<pre>'))->Postfix(new StringBase('</pre>'));
         }
 
         return $content;

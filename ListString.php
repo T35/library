@@ -2,12 +2,31 @@
 
 namespace t35\Library;
 
-class ListString extends ListSimple {
+use InvalidArgumentException;
+use TypeError;
+
+class ListString extends ListTyped {
+    public function __construct(ArrayBase|array $value = null) {
+        $this->classOfObjects = StringBase::class;
+        parent::__construct($value);
+    }
+
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     * @throws stdException
+     */
     public function offsetSet(mixed $offset, mixed $value): void {
         if (!($value instanceof StringBase)) {
-            throw new \InvalidArgumentException(
-                'Элемент "' . static::class . '" должен быть класса строкой "' . StringBase::class . '". Передан "' . get_debug_type($value) . '"'
-            );
+            try {
+                $value = new StringBase($value);
+            }
+            catch (TypeError $exception) {
+                throw new InvalidArgumentException(
+                    'Элемент "' . static::class . '" должен быть класса "' . StringBase::class . '", либо приводимым к строке. Передан "' . get_debug_type($value) . '"'
+                );
+            }
         }
 
         parent::offsetSet(null, $value);

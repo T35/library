@@ -27,17 +27,17 @@ class stdException extends \Exception {
             while ($throwable !== null) {
                 $path_info = pathinfo($throwable->getFile());
 
-                $message .= $format->LineBreak() . $format->Bold(StringBase::Inst('MESSAGE ' . $message_num++)) . $format->LineBreak();
-                $message .= 'CODE: ' . $format->Bold(StringBase::Inst($throwable->getCode())) . $format->LineBreak();
-                $message .= 'DIR: ' . $format->Bold(StringBase::Inst($CutFilePath
+                $message .= $format->LineBreak() . $format->Bold(new StringBase('MESSAGE ' . $message_num++)) . $format->LineBreak();
+                $message .= 'CODE: ' . $format->Bold(new StringBase($throwable->getCode())) . $format->LineBreak();
+                $message .= 'DIR: ' . $format->Bold(new StringBase($CutFilePath
                         ? str_replace($CutFilePath, '', $path_info['dirname'])
                         : $path_info['dirname'])) . $format->LineBreak();
-                $message .= 'FILE: ' . $format->Bold(StringBase::Inst($path_info['basename'])) . $format->LineBreak();
-                $message .= 'LINE: ' . $format->Bold(StringBase::Inst($throwable->getLine())) . $format->LineBreak();
-                $message .= 'MESSAGE: ' . $format->Bold(StringBase::Inst($throwable->getMessage())) . $format->LineBreak();
+                $message .= 'FILE: ' . $format->Bold(new StringBase($path_info['basename'])) . $format->LineBreak();
+                $message .= 'LINE: ' . $format->Bold(new StringBase($throwable->getLine())) . $format->LineBreak();
+                $message .= 'MESSAGE: ' . $format->Bold(new StringBase($throwable->getMessage())) . $format->LineBreak();
                 $message .= 'TRACE: ' . $throwable->getTraceAsString() . $format->LineBreak();
                 $message .= ($throwable->value_with_error !== null
-                        ? 'VALUE: ' . $format->Bold(StringBase::Inst(SimpleLibrary::GetVarDump($throwable->value_with_error, $format)))
+                        ? 'VALUE: ' . $format->Bold(new StringBase(SimpleLibrary::GetVarDump($throwable->value_with_error, $format)))
                         : '') . $format->LineBreak();
                 $message .= $format->LineBreak();
 

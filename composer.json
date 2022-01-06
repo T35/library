@@ -26,10 +26,11 @@
       "ArrayBase.php",
       "MapSimple.php",
       "ListSimple.php",
-      "ListString.php",
+      "ListUnique.php",
       "ArrayTyped.php",
       "MapSimpleTyped.php",
       "ListTyped.php",
+      "ListString.php",
       "StringBase.php",
       "EStringFormat.php"
     ]

@@ -8,6 +8,7 @@ use Iterator;
 use JetBrains\PhpStorm\Pure;
 use OutOfBoundsException;
 use t35\Library\Callback;
+use TypeError;
 
 /**
  * Контейнер для массива
@@ -26,23 +27,27 @@ class ArrayBase implements Iterator, ArrayAccess, Countable, IJSONSerializable {
     }
 
     /**
-     * Возвращает такой же массив, но с новыми данными.
-     * Подразумевается, что какие-то дополнительные настройки должны быть сохранены. Например, класс типизированного массива @param array|ArrayBase|null $value
-     * @return $this
-     * @see ArrayTyped
+     * Преобразование значения в объект ArrayBase static класса.
+     * Например, параметры типа array вначале всех методов, для удобства, нужно преобразовать в объект ArrayBase static класса.
      *
+     * @param mixed $value
+     * @return void
      */
-    public function similar(array|ArrayBase $value = null): static {
-        return new static($value);
+    public static function Converse(mixed &$value): void {
+        if (!($value instanceof ArrayBase)) {
+            $value = new static($value);
+        }
     }
 
     /**
-     * Возвращает реализацию класса.
+     * Возвращает такой же массив, но с новыми данными внутреннего массива(box) или пустой.
+     * Подразумевается, что какие-то дополнительные настройки должны быть сохранены. Например, класс типизированного массива.
      *
-     * @param mixed $value
-     * @return static
+     * @param array|ArrayBase|null $value
+     * @return $this
+     * @see ArrayTyped
      */
-    public static function Inst(mixed $value): static {
+    public function similar(array|ArrayBase $value = null): static {
         return new static($value);
     }
 
@@ -250,8 +255,30 @@ class ArrayBase implements Iterator, ArrayAccess, Countable, IJSONSerializable {
      * @return mixed
      */
     public function first(): mixed {
-        $this->rewind();
-        return $this->current();
+        return $this->getSafe(array_key_first($this->box));
+    }
+
+    /**
+     * Возвращает последний элемент массива.
+     *
+     * @return mixed
+     */
+    public function last(): mixed {
+        return $this->getSafe(array_key_last($this->box));
+    }
+
+    /**
+     * Возвращает результат добавления всех значений переданного массива в исходный массив(box).
+     * Сливание массивов происходит по принципу функции array_merge.
+     *
+     * @param array|ArrayBase $array
+     * @return static
+     * @see array_merge()
+     */
+    public function merge(array|ArrayBase $array): static {
+        ArrayBase::Converse($array);
+
+        return $this->similar(array_merge($this->toArray(), $array->toArray()));
     }
 
     /**
