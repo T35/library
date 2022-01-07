@@ -49,7 +49,7 @@ class SimpleLibrary {
     public static function ComposerLoad(ArrayBase $advancedDirs = null): void {
         if ($advancedDirs !== null) {
             foreach ($advancedDirs as $advancedDir) {
-                $files = glob($advancedDir . "*/composer.json");
+                $files = self::rglob($advancedDir . "*/composer.json");
                 foreach ($files as $filename) {
                     $composer_json = json_decode(file_get_contents($filename), true);
                     $composer_files = $composer_json['autoload']['files'] ?? false;
