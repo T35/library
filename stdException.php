@@ -2,10 +2,10 @@
 
 namespace t35\Library;
 
+use Exception;
 use JetBrains\PhpStorm\Pure;
-use Throwable;
 
-class stdException extends \Exception {
+class stdException extends Exception {
     private mixed $value_with_error;
 
     /**
@@ -59,5 +59,17 @@ class stdException extends \Exception {
     ) {
         $this->value_with_error = $value_with_error;
         parent::__construct($message, $code, $previous);
+    }
+
+    #[Pure] public static function Converse(Exception $exception): static {
+        if (!($exception instanceof stdException))
+            return new stdException(
+                'Исключение класса "' . get_class($exception) . '": ' . $exception->getMessage(),
+                null,
+                null,
+                $exception->getCode()
+            );
+
+        return $exception;
     }
 }
