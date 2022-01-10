@@ -213,10 +213,15 @@ class ArrayBase implements Iterator, ArrayAccess, Countable, IJSONSerializable {
      * Возвращает новый массив, отобранный по списку ключей.
      *
      * @param ListSimple $list Список ключей.
-     * @param bool $strict Если строго, то вернет пустой массив, если есть не все элементы из списка.
+     * @param bool $strict Если строго, то вернет пустой массив, если есть не все элементы из списка(white list), либо исключены не все элементы из списка(black list).
+     * @param bool $white Если true, то список считается "белым", иначе - "черным".
      * @return static
      */
-    public function filterByList(ListSimple $list, bool $strict = false): static {
+    public function filterByList(
+        ListSimple $list,
+        bool $strict = false,
+        bool $white = true
+    ): static {
         $callbackInList = new Callback\CallbackValueInList($list);
         $new = $this->filter($callbackInList, ARRAY_FILTER_USE_KEY);
         if ($strict)
