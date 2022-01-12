@@ -5,7 +5,7 @@ namespace t35\Library;
 use JetBrains\PhpStorm\Pure;
 use TypeError;
 
-class StringBase implements IJSONSerializable {
+class StringBase extends BaseClass implements IJSONSerializable {
     protected string $string;
 
     /**
@@ -35,16 +35,26 @@ class StringBase implements IJSONSerializable {
         }
     }
 
-    public function Get(): string {
+    /**
+     * Возвращает строку в формате string.
+     *
+     * @return string
+     */
+    protected function GetString(): string {
         return $this->string;
     }
 
+    /**
+     * Реализация приведения объекта к типу string.
+     *
+     * @return string
+     */
     #[Pure] public function __toString(): string {
-        return $this->Get();
+        return $this->GetString();
     }
 
     /**
-     * Геттер поля $format.
+     * Возвращает объект формата.
      *
      * @return EStringFormat
      */
@@ -53,7 +63,7 @@ class StringBase implements IJSONSerializable {
     }
 
     /**
-     * Сеттер поля $format.
+     * Определение объекта формата.
      *
      * @param EStringFormat $format
      * @return StringBase
@@ -132,11 +142,13 @@ class StringBase implements IJSONSerializable {
         return $this;
     }
 
+    /**
+     * Реализация интерфейса.
+     *
+     * @see IJSONSerializable
+     * @return string
+     */
     #[Pure] public function JSONSerialize(): string {
-        return $this->Get();
-    }
-
-    public function WithLineBreak(): string {
-        return $this->Get() . $this->format()->LineBreak();
+        return $this->GetString();
     }
 }

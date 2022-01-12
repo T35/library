@@ -8,12 +8,11 @@ use Iterator;
 use JetBrains\PhpStorm\Pure;
 use OutOfBoundsException;
 use t35\Library\Callback;
-use TypeError;
 
 /**
  * Контейнер для массива
  */
-class ArrayBase implements Iterator, ArrayAccess, Countable, IJSONSerializable {
+class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, IJSONSerializable {
     /**
      * Собственно, контейнер для данных массива.
      *

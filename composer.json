@@ -23,6 +23,7 @@
       "Callback/CallbackValueInList.php",
       "Callback/CallbackRegExp.php",
       "IJSONSerializable.php",
+      "BaseClass.php",
       "ArrayBase.php",
       "MapSimple.php",
       "ListSimple.php",
