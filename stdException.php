@@ -61,7 +61,7 @@ class stdException extends Exception {
         parent::__construct($message, $code, $previous);
     }
 
-    #[Pure] public static function Converse(Exception $exception): static {
+    #[Pure] public static function Conversed(Exception $exception): static {
         if (!($exception instanceof stdException))
             return new stdException(
                 'Исключение класса "' . get_class($exception) . '": ' . $exception->getMessage(),

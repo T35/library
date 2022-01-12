@@ -10,14 +10,15 @@ class StringBase extends BaseClass implements IJSONSerializable {
 
     /**
      * @param mixed $value
-     * @param EStringFormat $format
+     * @param EStringFormat|null $format
      * @throws stdException
      */
     public function __construct(
         mixed $value = '',
-        protected EStringFormat $format = EStringFormat::None
+        EStringFormat $format = null
     ) {
         $this->Set($value);
+        $this->SetFormat($format ?? EStringFormat::None);
     }
 
     /**
