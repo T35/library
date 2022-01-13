@@ -43,7 +43,8 @@ class SimpleLibrary {
      * Загрузка библиотек по логике Composer'а.
      *
      * @param ArrayBase|null $advancedDirs Папки, в которых находятся библиотеки, подготовленные для Composer'а. Например, находящиеся в разработке.
-     * Причем указанная папка может содержать множество вложенных библиотек. Данные папки это папки для функции glob с шаблоном поиска файлов composer.json.
+     * Причем указанная папка может содержать множество вложенных библиотек. Данные папки это папки для функции rglob с шаблоном поиска файлов composer.json.
+     * @see SimpleLibrary::rglob()
      * @return void
      */
     public static function ComposerLoad(ArrayBase $advancedDirs = null): void {
@@ -96,7 +97,7 @@ class SimpleLibrary {
 
         $result->putAll(glob($pattern, $flags), false);
 
-        $paths = glob($dir = dirname($pattern) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR | GLOB_NOSORT);
+        $paths = glob(dirname($pattern) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR | GLOB_NOSORT);
         $pattern_part = str_replace(dirname($pattern), '', $pattern);
 //        echo $pattern_part, '<br>';
         foreach ($paths as $path) {
