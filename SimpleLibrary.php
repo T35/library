@@ -42,22 +42,21 @@ class SimpleLibrary {
     /**
      * Загрузка библиотек по логике Composer'а.
      *
-     * @param ArrayBase|null $advancedDirs Папки, в которых находятся библиотеки, подготовленные для Composer'а. Например, находящиеся в разработке.
+     * @param ArrayBase $dirs Папки, в которых находятся библиотеки, подготовленные для Composer'а. Например, находящиеся в разработке.
      * Причем указанная папка может содержать множество вложенных библиотек. Данные папки это папки для функции rglob с шаблоном поиска файлов composer.json.
-     * @see SimpleLibrary::rglob()
+     * @param bool $recursive
      * @return void
+     * @see SimpleLibrary::rglob()
      */
-    public static function ComposerLoad(ArrayBase $advancedDirs = null): void {
-        if ($advancedDirs !== null) {
-            foreach ($advancedDirs as $advancedDir) {
-                $files = self::rglob($advancedDir . "*/composer.json");
-                foreach ($files as $filename) {
-                    $composer_json = json_decode(file_get_contents($filename), true);
-                    $composer_files = $composer_json['autoload']['files'] ?? false;
-                    if ($composer_files && is_array($composer_files)) {
-                        foreach ($composer_files as $composer_file) {
-                            include_once dirname($filename) . DIRECTORY_SEPARATOR . $composer_file;
-                        }
+    public static function ComposerLoad(ArrayBase $dirs, bool $recursive = true): void {
+        foreach ($dirs as $dir) {
+            $files = ($recursive ? self::rglob($dir . "*/composer.json") : glob($dir . "*/composer.json"));
+            foreach ($files as $filename) {
+                $composer_json = json_decode(file_get_contents($filename), true);
+                $composer_files = $composer_json['autoload']['files'] ?? false;
+                if ($composer_files && is_array($composer_files)) {
+                    foreach ($composer_files as $composer_file) {
+                        include_once dirname($filename) . DIRECTORY_SEPARATOR . $composer_file;
                     }
                 }
             }
