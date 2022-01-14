@@ -42,11 +42,12 @@ class SimpleLibrary {
     /**
      * Загрузка библиотек по логике Composer'а.
      *
-     * @param ArrayBase $dirs Папки, в которых находятся библиотеки, подготовленные для Composer'а. Например, находящиеся в разработке.
-     * Причем указанная папка может содержать множество вложенных библиотек. Данные папки это папки для функции rglob с шаблоном поиска файлов composer.json.
-     * @param bool $recursive
+     * @param ArrayBase $dirs Папки, в которых находятся библиотеки, подготовленные для Composer'а. Например, находящиеся в разработке, либо корневая папка проекта.
+     * Если используется rglob, указанная папка может содержать множество вложенных библиотек.
+     * @param bool $recursive Если "true" - будет использована функция rglob, иначе - glob.
      * @return void
      * @see SimpleLibrary::rglob()
+     * @see glob()
      */
     public static function ComposerLoad(ArrayBase $dirs, bool $recursive = true): void {
         foreach ($dirs as $dir) {
