@@ -218,13 +218,16 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
      */
     public function filterByList(
         ListSimple $list,
-        bool $strict = false,
-        bool $white = true
+        bool       $strict = false,
+        bool       $white = true
     ): static {
-        $callbackInList = new Callback\CallbackValueInList($list);
+        $callbackInList = new Callback\CallbackValueInList($list, $white);
         $new = $this->filter($callbackInList, ARRAY_FILTER_USE_KEY);
         if ($strict)
-            return $list->count() == $new->count() ? $new : $this->similar();
+            if ($white)
+                return $list->count() == $new->count() ? $new : $this->similar();
+            else
+                return $this->count() == $new->count() + $list->count() ? $new : $this->similar();
 
         return $new;
     }
@@ -474,17 +477,17 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     /**
      * Безопасный getValid. Если проверка не пройдена, вернет $failed_value.
      *
-     * @see getValid()
      * @param mixed $key
      * @param false|callable|ArrayBase $callback
      * @param bool $failed_value Возвращает это значение в случае неудачи.
      * @return mixed
      * @throws stdException
+     * @see getValid()
      */
     public function getValidSafe(
-        mixed $key,
+        mixed                    $key,
         false|callable|ArrayBase $callback = false,
-        bool $failed_value = null
+        bool                     $failed_value = null
     ): mixed {
         return $this->getValid($key, $callback, false) ?? $failed_value;
     }

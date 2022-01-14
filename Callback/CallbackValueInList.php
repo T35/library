@@ -11,12 +11,20 @@ use t35\Library\ListSimple;
  * Проверяет значение на наличие в списке.
  */
 class CallbackValueInList {
+    /**
+     * @param ListSimple $list
+     * @param $white "Белый", либо "черный" список.
+     */
     public function __construct(
-        protected ListSimple $list
+        protected ListSimple $list,
+        protected bool       $white = true
     ) {
     }
 
     #[Pure] public function __invoke(mixed $value): bool {
-        return $this->list->in_array($value);
+        return
+            $this->white
+                ? $this->list->in_array($value)
+                : !$this->list->in_array($value);
     }
 }
