@@ -32,9 +32,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      */
     protected static array $encodings = [
         'UTF-8',
-        'Windows-1251',
-        'ISO-8859-1',
-        'ASCII'
+        'Windows-1251'
     ];
 
     /**
