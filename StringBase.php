@@ -2,6 +2,7 @@
 
 namespace t35\Library;
 
+use Error;
 use JetBrains\PhpStorm\Pure;
 use TypeError;
 
@@ -214,12 +215,35 @@ class StringBase extends BaseClass implements IJSONSerializable {
         int    $offset = 0,
         int    $length = null
     ): StringBase {
-        return new StringBase(file_get_contents(
-            $filename,
-            $use_include_path,
-            $context,
-            $offset,
-            $length
-        ), true);
+        try {
+            $string = file_get_contents(
+                $filename,
+                $use_include_path,
+                $context,
+                $offset,
+                $length
+            );
+        }
+        catch (Error $error) {
+            throw new stdException(
+                'Ошибка загрузки файла: ' . $error->getMessage(),
+                [
+                    'filename' => $filename
+                ],
+                stdException::Conversed($error),
+                $error->getCode()
+            );
+        }
+
+        if ($string === false) {
+            throw new stdException(
+                'Не удалось загрузить файл',
+                [
+                    'filename' => $filename
+                ]
+            );
+        }
+
+        return new StringBase($string, true);
     }
 }
