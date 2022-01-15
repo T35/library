@@ -7,8 +7,7 @@ use TypeError;
 
 class ListString extends ListTyped {
     public function __construct(ArrayBase|array $value = null) {
-        $this->classOfObjects = StringBase::class;
-        parent::__construct($value);
+        parent::__construct(StringBase::class, $value);
     }
 
     /**
