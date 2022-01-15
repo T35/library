@@ -41,7 +41,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      *
      * @param ListString $listEncodings
      * @return void
-     *@see StringBase::ConverseToUTF8()
+     * @see StringBase::ConverseToUTF8()
      */
     public static function SetEncodings(ListString $listEncodings): void {
         self::$encodings = $listEncodings->toArray();
@@ -194,5 +194,32 @@ class StringBase extends BaseClass implements IJSONSerializable {
                 ]
             );
         }
+    }
+
+    /**
+     * Реализация file_get_contents с учетом отличной от UTF-8 кодировки у исходного файла.
+     *
+     * @param string $filename
+     * @param bool $use_include_path
+     * @param $context
+     * @param int $offset
+     * @param int|null $length
+     * @return StringBase
+     * @throws stdException
+     */
+    public static function file_get_contents(
+        string $filename,
+        bool   $use_include_path = false,
+               $context = null,
+        int    $offset = 0,
+        int    $length = null
+    ): StringBase {
+        return new StringBase(file_get_contents(
+            $filename,
+            $use_include_path,
+            $context,
+            $offset,
+            $length
+        ), true);
     }
 }
