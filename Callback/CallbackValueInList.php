@@ -4,6 +4,7 @@ namespace t35\Library\Callback;
 
 use JetBrains\PhpStorm\Pure;
 use t35\Library\ListSimple;
+use t35\Library\ListWithRequireStatus;
 
 /**
  * Класс-callback-функция.
@@ -12,18 +13,16 @@ use t35\Library\ListSimple;
  */
 class CallbackValueInList {
     /**
-     * @param ListSimple $list
-     * @param $white "Белый", либо "черный" список.
+     * @param ListWithRequireStatus $list
      */
     public function __construct(
-        protected ListSimple $list,
-        protected bool       $white = true
+        protected ListWithRequireStatus $list,
     ) {
     }
 
     #[Pure] public function __invoke(mixed $value): bool {
         return
-            $this->white
+            $this->list->requireStatus()->isPositive()
                 ? $this->list->in_array($value)
                 : !$this->list->in_array($value);
     }

@@ -210,24 +210,19 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
 
     /**
      * Возвращает новый массив, отобранный по списку ключей.
+     * Если список обязательный, вернет пустой массив, если не все поля найдены.
      *
-     * @param ListSimple $list Список ключей.
-     * @param bool $strict Если строго, то вернет пустой массив, если есть не все элементы из списка(white list), либо исключены не все элементы из списка(black list).
-     * @param bool $white Если true, то список считается "белым", иначе - "черным".
+     * @param ListWithRequireStatus $list Список ключей с информацией об обязательности.
+     * @see ListWithRequireStatus
      * @return static
      */
     public function filterByList(
-        ListSimple $list,
-        bool       $strict = false,
-        bool       $white = true
+        ListWithRequireStatus $list
     ): static {
-        $callbackInList = new Callback\CallbackValueInList($list, $white);
+        $callbackInList = new Callback\CallbackValueInList($list);
         $new = $this->filter($callbackInList, ARRAY_FILTER_USE_KEY);
-        if ($strict)
-            if ($white)
+        if ($list->requireStatus() == ERequireStatus::Require)
                 return $list->count() == $new->count() ? $new : $this->similar();
-            else
-                return $this->count() == $new->count() + $list->count() ? $new : $this->similar();
 
         return $new;
     }
@@ -428,20 +423,19 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     /**
      * Проверяет значения массива по набору проверок.
      *
-     * @param ArrayBase $valid_scheme Массив-набор проверок. Ключ - ключ массива, значение - callback-функция проверки или VM_-константа, или массив таких по логике "И".
-     * @param bool $strict Строгость для набора ключей. Если true, положительный результат будет только в том случае, когда все ключи найдены.
+     * @param ArrayValidScheme $validScheme Массив-набор проверок. Ключ - ключ массива, значение - callback-функция проверки или VM_-константа, или массив таких по логике "И".
      * @param bool $throw_exception Если true, в случае отрицательного результата выбросится исключение. В противном случае будет возвращен массив с удачными проверками.
      * @return static
      * @throws stdException
      */
     public function getValidByScheme(
-        ArrayBase $valid_scheme,
-        bool      $strict = true,
-        bool      $throw_exception = true
+        ArrayValidScheme $validScheme,
+        bool             $throw_exception = true
     ): static {
         $new = $this->similar();
-        foreach ($this->filterByList(new ListSimple($valid_scheme->array_keys()), $strict) as $key => $value) {
-            if (($new_value = $this->getValid($key, $valid_scheme[$key], $throw_exception)) !== null)
+
+        foreach ($this->filterByList(new ListWithRequireStatus($validScheme->array_keys(), $validScheme->isStrict() ? ERequireStatus::Require : ERequireStatus::WhiteList)) as $key => $value) {
+            if (($new_value = $this->getValid($key, $validScheme[$key], $throw_exception)) !== null)
                 $new[$key] = $new_value;
         }
 
@@ -449,8 +443,7 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
             throw new stdException(
                 'Массив не прошел список проверок',
                 [
-                    'strict' => $strict,
-                    'valid_scheme' => $valid_scheme,
+                    'valid_scheme' => $validScheme,
                     'box' => $this->box
                 ]
             );

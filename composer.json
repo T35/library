@@ -24,17 +24,22 @@
       "Callback/CallbackValueInList.php",
       "Callback/CallbackRegExp.php",
       "IJSONSerializable.php",
+      "IConstructableByStructure.php",
+      "ERequireStatus.php",
       "BaseClass.php",
       "ArrayBase.php",
       "MapSimple.php",
       "ListSimple.php",
       "ListUnique.php",
+      "ListWithRequireStatus.php",
+      "ListCallables.php",
       "ArrayTyped.php",
       "MapSimpleTyped.php",
       "ListTyped.php",
       "ListString.php",
       "StringBase.php",
-      "EStringFormat.php"
+      "EStringFormat.php",
+      "ArrayValidScheme.php"
     ]
   }
 }
