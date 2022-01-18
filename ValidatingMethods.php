@@ -2,7 +2,10 @@
 
 namespace t35\Library;
 
+use t35\Library\Arrays\ArrayBase;
+use t35\Library\Arrays\ListCallables;
 use t35\Library\Callback;
+use t35\Library\Exceptions\stdException;
 
 class ValidatingMethods {
     /**
@@ -42,29 +45,21 @@ class ValidatingMethods {
      * Проверка значения по callback-функции или массиву callback-функций по логике "И".
      *
      * @param mixed $value
-     * @param callable|ArrayBase $callback
-     * @param bool $throw_exception
+     * @param ListCallables $callbackList
+     * @param FailedValue $failedValue
      * @return mixed
-     * @throws stdException
+     * @throws Exceptions\FailedValue
      */
-    public static function Validated(mixed $value, callable|ArrayBase $callback, bool $throw_exception = true): mixed {
-        if (is_callable($callback)) {
-            $callback = new ArrayBase([$callback]);
-        }
-
-        foreach ($callback as $callback_item) {
-            if (!$callback_item($value)) {
-                if ($throw_exception) {
-                    throw new stdException(
-                        'Значение не прошло проверку callback-функции',
-                        [
-                            'value' => $value,
-                            'callback' => $callback
-                        ]
-                    );
-                }
-
-                return null;
+    public static function Validated(mixed $value, ListCallables $callbackList, FailedValue $failedValue = new FailedValue(null)): mixed {
+        foreach ($callbackList as $callback) {
+            if (!$callback($value)) {
+                return $failedValue->Get(new stdException(
+                    'Значение не прошло проверку callback-функции',
+                    [
+                        'value' => $value,
+                        'callback' => $callbackList
+                    ]
+                ));
             }
         }
 

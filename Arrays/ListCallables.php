@@ -1,8 +1,10 @@
 <?php
 
-namespace t35\Library;
+namespace t35\Library\Arrays;
 
 use InvalidArgumentException;
+use t35\Library\Arrays\ArrayBase;
+use t35\Library\Arrays\ListSimple;
 
 /**
  * Список callback-функций.

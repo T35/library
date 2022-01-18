@@ -1,6 +1,8 @@
 <?php
 
-namespace t35\Library;
+namespace t35\Library\Arrays;
+
+use t35\Library\Arrays\ListSimple;
 
 /**
  * Лист только с уникальными значениями.

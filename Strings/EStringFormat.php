@@ -1,6 +1,8 @@
 <?php
 
-namespace t35\Library;
+namespace t35\Library\Strings;
+
+use t35\Library\Exceptions\stdException;
 
 enum EStringFormat {
     case None;

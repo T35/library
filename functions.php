@@ -5,6 +5,7 @@ namespace t35\Library;
 use ArrayAccess;
 use Countable;
 use JetBrains\PhpStorm\Pure;
+use t35\Library\Arrays\ArrayBase;
 
 /**
  * Расширение array_key_exists. Стандартная функция работает только с array.

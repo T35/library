@@ -1,6 +1,10 @@
 <?php
 
-namespace t35\Library;
+namespace t35\Library\Arrays;
+
+use t35\Library\Arrays\ArrayBase;
+use t35\Library\Arrays\ListUnique;
+use t35\Library\ERequireStatus;
 
 /**
  * Реализация списка с флагом: обязательный, "белый" или "черный".

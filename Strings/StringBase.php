@@ -1,9 +1,13 @@
 <?php
 
-namespace t35\Library;
+namespace t35\Library\Strings;
 
 use Error;
 use JetBrains\PhpStorm\Pure;
+use t35\Library\BaseClass;
+use t35\Library\IJSONSerializable;
+use t35\Library\Arrays\ListString;
+use t35\Library\Exceptions\stdException;
 use TypeError;
 
 class StringBase extends BaseClass implements IJSONSerializable {
@@ -38,7 +42,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
     /**
      * Переопределение списка кодировок для определения кодировки базовой строки в процессе конвертации в UTF-8.
      *
-     * @param ListString $listEncodings
+     * @param \t35\Library\Arrays\ListString $listEncodings
      * @return void
      * @see StringBase::ConverseToUTF8()
      */
@@ -67,7 +71,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * @param mixed $value
      * @param bool $converseToUTF8
      * @return void
-     * @throws stdException
+     * @throws \t35\Library\Exceptions\stdException
      */
     public static function Converse(mixed &$value, bool $converseToUTF8 = false): void {
         if (!($value instanceof StringBase)) {
@@ -98,7 +102,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      *
      * @param mixed $value
      * @return StringBase
-     * @throws stdException
+     * @throws \t35\Library\Exceptions\stdException
      */
     public function Set(mixed $value): static {
         try {
@@ -121,7 +125,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      *
      * @param mixed $value
      * @return $this
-     * @throws stdException
+     * @throws \t35\Library\Exceptions\stdException
      */
     public function Prefix(mixed $value): static {
         try {

@@ -4,6 +4,10 @@ namespace t35\Library;
 
 use ArrayAccess;
 use JetBrains\PhpStorm\Pure;
+use t35\Library\Arrays\ArrayBase;
+use t35\Library\Exceptions\stdException;
+use t35\Library\Strings\EStringFormat;
+use t35\Library\Strings\StringBase;
 
 class SimpleLibrary {
     public const REG_EXP_SYSTEM_NAME = '/^[a-zA-Z][a-zA-Z0-9_]+$/';

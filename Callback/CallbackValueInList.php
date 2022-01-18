@@ -3,8 +3,8 @@
 namespace t35\Library\Callback;
 
 use JetBrains\PhpStorm\Pure;
-use t35\Library\ListSimple;
-use t35\Library\ListWithRequireStatus;
+use t35\Library\Arrays\ListSimple;
+use t35\Library\Arrays\ListWithRequireStatus;
 
 /**
  * Класс-callback-функция.
@@ -13,7 +13,7 @@ use t35\Library\ListWithRequireStatus;
  */
 class CallbackValueInList {
     /**
-     * @param ListWithRequireStatus $list
+     * @param \t35\Library\Arrays\ListWithRequireStatus $list
      */
     public function __construct(
         protected ListWithRequireStatus $list,

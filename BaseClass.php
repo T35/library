@@ -2,6 +2,8 @@
 
 namespace t35\Library;
 
+use t35\Library\Strings\StringBase;
+
 class BaseClass {
     /**
      * Возвращает имя класса в виде класса StringBase.

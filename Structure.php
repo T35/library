@@ -2,6 +2,11 @@
 
 namespace t35\Library;
 
+use t35\Library\Arrays\ArrayBase;
+use t35\Library\Arrays\ListCallables;
+use t35\Library\Arrays\MapSimple;
+use t35\Library\Exceptions\stdException;
+
 /**
  * Объект структуры, описывающий способ инициализации данных.
  */
@@ -28,12 +33,12 @@ class Structure extends BaseClass {
 
         $this->structureClass = $array->getValid(
             'structureClass',
-            [static::class, 'isConstructableByStructure']
+            new ListCallables([static::class, 'isConstructableByStructure'])
         );
 
         $this->fields = new MapSimple($array->getValid(
             'fields',
-            ValidatingMethods::VM_NOT_EMPTY_ARRAY
+            new ListCallables(ValidatingMethods::VM_NOT_EMPTY_ARRAY)
         ));
 
         foreach ($this->fields as $field_name=>&$field) {
@@ -58,7 +63,7 @@ class Structure extends BaseClass {
      *
      * @param array|ArrayBase $input_data
      * @return IConstructableByStructure
-     * @throws stdException
+     * @throws stdException|Exceptions\FailedValue
      */
     public function GetInstantiate(array|ArrayBase $input_data): IConstructableByStructure {
         /** @var ArrayBase $input_data */
@@ -72,7 +77,7 @@ class Structure extends BaseClass {
                 foreach ($input_data as $item) {
                     $output_data[] = ValidatingMethods::Validated(
                         $item,
-                        ($field->array_key_exists('VM') ? new ArrayBase($field['VM']) : null)
+                        new ListCallables($field->array_key_exists('VM') ? new ArrayBase($field['VM']) : null)
                     );
                 }
 
@@ -81,7 +86,7 @@ class Structure extends BaseClass {
 
             if ($output_value = $field->getValid(
                 $field_name,
-                ($field->array_key_exists('VM') ? new ArrayBase($field['VM']) : null),
+                new ListCallables($field->array_key_exists('VM') ? new ArrayBase($field['VM']) : null),
                 $field->getSafe('required', false)
             )) {
                 $output_data[($field_name === '__array') ? null : $field_name] = $output_value;
