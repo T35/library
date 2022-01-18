@@ -248,4 +248,36 @@ class StringBase extends BaseClass implements IJSONSerializable {
 
         return new StringBase($string, true);
     }
+
+    /**
+     * Реализация стандартного функционала.
+     *
+     * @see mb_strlen()
+     * @return int
+     */
+    public function strlen(): int {
+        return mb_strlen($this->string);
+    }
+
+    /**
+     * Реализация стандартного функционала.
+     *
+     * @see mb_strpos()
+     * @param StringBase $needle
+     * @return int
+     */
+    public function strpos(StringBase $needle): int {
+        return mb_strpos($this->string, $needle);
+    }
+
+    /**
+     * Реализация стандартного функционала.
+     *
+     * @see mb_stripos()
+     * @param StringBase $needle
+     * @return int
+     */
+    public function stripos(StringBase $needle): int {
+        return mb_stripos($this->string, $needle);
+    }
 }
