@@ -4,12 +4,14 @@ namespace t35\Library\Strings;
 
 use Error;
 use JetBrains\PhpStorm\Pure;
+use t35\Library\Arrays\ArrayBase;
 use t35\Library\BaseClass;
-use t35\Library\FailedValue;
 use t35\Library\IJSONSerializable;
 use t35\Library\Arrays\ListString;
 use t35\Library\Exceptions\stdException;
 use TypeError;
+use function mb_convert_encoding;
+use function mb_detect_encoding;
 
 class StringBase extends BaseClass implements IJSONSerializable {
     /** @var string Базовая строка */
@@ -52,17 +54,50 @@ class StringBase extends BaseClass implements IJSONSerializable {
     }
 
     /**
+     * Возвращает список кодировок.
+     *
+     * @param array|ArrayBase|null $addingEncodings Если передано, то в начало списка ставятся переданные кодировки.
+     * @return ListString
+     */
+    public static function GetEncodings(array|ArrayBase $addingEncodings = null): ListString {
+        $encodings = new ListString($addingEncodings);
+        $encodings->putAll(self::$encodings);
+        return $encodings;
+    }
+
+    /**
      * @param mixed $value
-     * @param bool $converseToUTF8 Если "true", входная строка будет приведена к UTF-8, если это возможно.
+     * @param bool $convertToUTF8
+     * @param ListString|null $listEncodings
      * @throws stdException
+     * @see StringBase::SetEncodings()
      */
     public function __construct(
-        mixed $value = '',
-        bool  $converseToUTF8 = false
+        mixed      $value = '',
+        bool       $convertToUTF8 = false,
+        ListString $listEncodings = null
     ) {
         $this->Set($value);
-        if ($converseToUTF8)
-            $this->ConverseToUTF8();
+        if ($convertToUTF8) {
+            $this->ConverseToUTF8($listEncodings);
+        }
+    }
+
+    /**
+     * Возвращает копию объекта с пустым контейнером(строкой).
+     * Сохраняет все прочие настройки.
+     *
+     * @return $this
+     * @throws stdException
+     */
+    public function similar(
+        mixed $value = ''
+    ): static {
+        $new = new static($value);
+        if ($this->InitEncoding()) {
+            $new->InitEncoding = $this->InitEncoding();
+        }
+        return $new;
     }
 
     /**
@@ -76,7 +111,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      */
     public static function Converse(mixed &$value, bool $converseToUTF8 = false): void {
         if (!($value instanceof StringBase)) {
-            $value = new static($value, $converseToUTF8);
+            $value = new static($value);
         }
     }
 
@@ -180,13 +215,13 @@ class StringBase extends BaseClass implements IJSONSerializable {
     /**
      * Приведение исходной строки к UTF-8.
      *
+     * @param ListString|null $listEncodings
      * @return void
      * @throws stdException
      */
-    public function ConverseToUTF8(): void {
-        if ($encoding = mb_detect_encoding($this->string, static::$encodings, true)) {
+    public function ConverseToUTF8(ListString $listEncodings = null): void {
+        if ($encoding = mb_detect_encoding($this->string, self::GetEncodings($listEncodings)->toArray(), true)) {
             $this->InitEncoding = new StringBase($encoding);
-
             $this->string = mb_convert_encoding($this->string, 'UTF-8', $this->InitEncoding());
         }
         else {
@@ -218,8 +253,10 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * Реализация file_get_contents с учетом отличной от UTF-8 кодировки у исходного файла.
      *
      * @param string $filename
+     * @param bool $convertToUTF8
+     * @param ListString|null $listEncodings
      * @param bool $use_include_path
-     * @param $context
+     * @param null $context
      * @param int $offset
      * @param int|null $length
      * @return StringBase
@@ -227,11 +264,13 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * @see file_get_contents()
      */
     public static function file_get_contents(
-        string $filename,
-        bool   $use_include_path = false,
-               $context = null,
-        int    $offset = 0,
-        int    $length = null
+        string     $filename,
+        bool       $convertToUTF8 = true,
+        ListString $listEncodings = null,
+        bool       $use_include_path = false,
+                   $context = null,
+        int        $offset = 0,
+        int        $length = null
     ): StringBase {
         try {
             $string = file_get_contents(
@@ -262,14 +301,14 @@ class StringBase extends BaseClass implements IJSONSerializable {
             );
         }
 
-        return new StringBase($string, true);
+        return new StringBase($string, $convertToUTF8, $listEncodings);
     }
 
     /**
      * Реализация file_put_contents с учетом отличной от UTF-8 кодировки у исходного файла.
      *
      * @param string $filename
-     * @param bool $conversedBack Если true, в файл пойдет строка в кодировке, полученной при создании файла.
+     * @param bool $conversedBack Если true, в файл пойдет строка в кодировке, определенной при создании файла.
      * @param int $flag
      * @param null $context
      * @return int|false
@@ -334,5 +373,26 @@ class StringBase extends BaseClass implements IJSONSerializable {
      */
     public function stripos(StringBase $needle): int {
         return mb_stripos($this->string, $needle);
+    }
+
+    /**
+     * Реализация стандартного функционала.
+     *
+     * @param int $start
+     * @param int|null $length
+     * @return $this
+     * @throws stdException
+     */
+    public function substr(
+        int  $start,
+        ?int $length = null
+    ): static {
+        return $this->similar(
+            mb_substr(
+                $this->string,
+                $start,
+                $length
+            )
+        );
     }
 }
