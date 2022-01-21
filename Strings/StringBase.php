@@ -5,6 +5,7 @@ namespace t35\Library\Strings;
 use Error;
 use JetBrains\PhpStorm\Pure;
 use t35\Library\BaseClass;
+use t35\Library\FailedValue;
 use t35\Library\IJSONSerializable;
 use t35\Library\Arrays\ListString;
 use t35\Library\Exceptions\stdException;
@@ -42,7 +43,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
     /**
      * Переопределение списка кодировок для определения кодировки базовой строки в процессе конвертации в UTF-8.
      *
-     * @param \t35\Library\Arrays\ListString $listEncodings
+     * @param ListString $listEncodings
      * @return void
      * @see StringBase::ConverseToUTF8()
      */
@@ -71,7 +72,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * @param mixed $value
      * @param bool $converseToUTF8
      * @return void
-     * @throws \t35\Library\Exceptions\stdException
+     * @throws stdException
      */
     public static function Converse(mixed &$value, bool $converseToUTF8 = false): void {
         if (!($value instanceof StringBase)) {
@@ -102,7 +103,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      *
      * @param mixed $value
      * @return StringBase
-     * @throws \t35\Library\Exceptions\stdException
+     * @throws stdException
      */
     public function Set(mixed $value): static {
         try {
@@ -125,7 +126,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      *
      * @param mixed $value
      * @return $this
-     * @throws \t35\Library\Exceptions\stdException
+     * @throws stdException
      */
     public function Prefix(mixed $value): static {
         try {
@@ -200,6 +201,20 @@ class StringBase extends BaseClass implements IJSONSerializable {
     }
 
     /**
+     * Возвращает строку в той кодировке, в которой была изначально при создании объекта.
+     * Если изначально не проводилась перекодировка, то будет возвращена внутренняя строка.
+     *
+     * @return string
+     */
+    #[Pure] public function ConversedBack(): string {
+        if (!$this->InitEncoding()) {
+            return $this->string;
+        }
+
+        return mb_convert_encoding($this->string, $this->InitEncoding, 'UTF-8');
+    }
+
+    /**
      * Реализация file_get_contents с учетом отличной от UTF-8 кодировки у исходного файла.
      *
      * @param string $filename
@@ -209,6 +224,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * @param int|null $length
      * @return StringBase
      * @throws stdException
+     * @see file_get_contents()
      */
     public static function file_get_contents(
         string $filename,
@@ -228,7 +244,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
         }
         catch (Error $error) {
             throw new stdException(
-                'Ошибка загрузки файла: ' . $error->getMessage(),
+                'Ошибка чтения файла: ' . $error->getMessage(),
                 [
                     'filename' => $filename
                 ],
@@ -250,10 +266,49 @@ class StringBase extends BaseClass implements IJSONSerializable {
     }
 
     /**
+     * Реализация file_put_contents с учетом отличной от UTF-8 кодировки у исходного файла.
+     *
+     * @param string $filename
+     * @param bool $conversedBack Если true, в файл пойдет строка в кодировке, полученной при создании файла.
+     * @param int $flag
+     * @param null $context
+     * @return int|false
+     * @throws stdException
+     * @see file_put_contents()
+     */
+    public function file_put_contents(
+        string $filename,
+        bool   $conversedBack = false,
+        int    $flag = 0,
+               $context = null
+    ): int|false {
+        try {
+            return file_put_contents(
+                $filename,
+                $conversedBack
+                    ? $this->ConversedBack()
+                    : $this->string,
+                $flag,
+                $context
+            );
+        }
+        catch (Error $error) {
+            throw new stdException(
+                'Ошибка записи файла: ' . $error->getMessage(),
+                [
+                    'filename' => $filename
+                ],
+                stdException::Conversed($error),
+                $error->getCode()
+            );
+        }
+    }
+
+    /**
      * Реализация стандартного функционала.
      *
-     * @see mb_strlen()
      * @return int
+     * @see mb_strlen()
      */
     public function strlen(): int {
         return mb_strlen($this->string);
@@ -262,9 +317,9 @@ class StringBase extends BaseClass implements IJSONSerializable {
     /**
      * Реализация стандартного функционала.
      *
-     * @see mb_strpos()
      * @param StringBase $needle
      * @return int
+     * @see mb_strpos()
      */
     public function strpos(StringBase $needle): int {
         return mb_strpos($this->string, $needle);
@@ -273,9 +328,9 @@ class StringBase extends BaseClass implements IJSONSerializable {
     /**
      * Реализация стандартного функционала.
      *
-     * @see mb_stripos()
      * @param StringBase $needle
      * @return int
+     * @see mb_stripos()
      */
     public function stripos(StringBase $needle): int {
         return mb_stripos($this->string, $needle);

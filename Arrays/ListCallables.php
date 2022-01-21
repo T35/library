@@ -3,8 +3,7 @@
 namespace t35\Library\Arrays;
 
 use InvalidArgumentException;
-use t35\Library\Arrays\ArrayBase;
-use t35\Library\Arrays\ListSimple;
+use t35\Library\Exceptions\stdException;
 
 /**
  * Список callback-функций.
@@ -17,9 +16,15 @@ class ListCallables extends ListSimple {
         parent::__construct($value);
     }
 
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     * @throws stdException
+     */
     public function offsetSet(mixed $offset, mixed $value): void {
         if (!is_callable($value))
-            throw new InvalidArgumentException(
+            throw new stdException(
                 'Значение должно быть типа callable, передано типа "' . get_debug_type($value) . '"'
             );
         parent::offsetSet($offset, $value);

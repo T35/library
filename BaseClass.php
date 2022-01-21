@@ -22,8 +22,4 @@ class BaseClass {
     public static function isThatSubclass(string $className): bool {
         return is_subclass_of($className, static::class);
     }
-
-    public static function isConstructableByStructure(): bool {
-        return ($interfaces = class_implements(static::class)) && in_array(IConstructableByStructure::class, $interfaces);
-    }
 }

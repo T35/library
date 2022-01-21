@@ -2,10 +2,6 @@
 
 namespace t35\Library\Arrays;
 
-use t35\Library\Arrays\ArrayBase;
-use t35\Library\Arrays\ListCallables;
-use t35\Library\Arrays\MapSimpleTyped;
-
 /**
  * Схема для проверки значений массива.
  * @see ListCallables

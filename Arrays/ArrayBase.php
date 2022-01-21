@@ -11,7 +11,7 @@ use OutOfBoundsException;
 use t35\Library\BaseClass;
 use t35\Library\Callback;
 use t35\Library\EFailedValueType;
-use t35\Library\ERequireStatus;
+use t35\Library\EInclusionStatus;
 use t35\Library\FailedValue;
 use t35\Library\Strings\EStringFormat;
 use t35\Library\IJSONSerializable;
@@ -159,6 +159,15 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     }
 
     /**
+     * Считается ли массив пустым.
+     *
+     * @return bool
+     */
+    #[Pure] public function isEmpty(): bool {
+        return !$this->count();
+    }
+
+    /**
      * Добавление элементов из другого массива или объекта ArrayBase.
      *
      * @param array|ArrayBase $value
@@ -229,7 +238,7 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
      *
      * @param ListWithRequireStatus $list Список ключей с информацией об обязательности. Список может быть "белым" или "черным".
      * @return static
-     * @see ERequireStatus
+     * @see EInclusionStatus
      * @see ListWithRequireStatus
      */
     public function filterByList(
@@ -237,7 +246,7 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     ): static {
         $callbackInList = new Callback\CallbackValueInList($list);
         $new = $this->filter($callbackInList, ARRAY_FILTER_USE_KEY);
-        if ($list->requireStatus() == ERequireStatus::Require) {
+        if ($list->requireStatus() == EInclusionStatus::Require) {
             return $list->count() == $new->count() ? $new : $this->similar();
         }
 
@@ -247,11 +256,11 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     /**
      * Возвращает новый массив, отобранный по набору проверок, либо выполняет FailedValue.
      *
-     * @see FailedValue
      * @param ArrayValidScheme $validScheme Массив-набор проверок. Ключ - ключ массива, значение - callback-функция проверки или VM_-константа, или массив таких по логике "И".
      * @param FailedValue $failedValue
      * @return static
      * @throws stdException|\t35\Library\Exceptions\FailedValue
+     * @see FailedValue
      */
     public function filterByValidScheme(
         ArrayValidScheme $validScheme,
@@ -259,11 +268,11 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     ): mixed {
         $new = $this->similar();
 
-        foreach ($this->filterByList(new ListWithRequireStatus($validScheme->array_keys(), $validScheme->isStrict() ? ERequireStatus::Require : ERequireStatus::WhiteList)) as $key => $value) {
+        foreach ($this->filterByList(new ListWithRequireStatus($validScheme->array_keys(), $validScheme->isStrict() ? EInclusionStatus::Require : EInclusionStatus::WhiteList)) as $key => $value) {
             if (($new_value = $this->getValid($key, $validScheme[$key], new FailedValue(null))) !== null)
                 $new[$key] = $new_value;
             elseif ($validScheme->isStrict())
-                return $failedValue->Get(new stdException(
+                return $failedValue->Get(new \t35\Library\Exceptions\FailedValue(
                     'Массив не прошел проверку callback-функцией(-ями)',
                     [
                         'key' => $key,
@@ -274,7 +283,7 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
         }
 
         if (!$new->count())
-            return $failedValue->Get(new stdException(
+            return $failedValue->Get(new \t35\Library\Exceptions\FailedValue(
                 'Массив не прошел список проверок',
                 [
                     'valid_scheme' => $validScheme,
@@ -300,10 +309,11 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     }
 
     /**
-     * Возвращает копию массива с примененной ко всем значениям callback-функцией.
+     * Возвращает копию массива с применением apply.
      *
-     * @param callable $callback
-     * @return $this
+     * @param callable $callback Зависит от apply.
+     * @return static
+     * @see ArrayBase::apply()
      */
     public function map(callable $callback): static {
         return $this->similar($this->box)->apply($callback);
@@ -419,7 +429,7 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
             $value = $array[$key];
         }
         catch (OutOfBoundsException $exception) {
-            return $failedValue->Get(new stdException(
+            return $failedValue->Get(new \t35\Library\Exceptions\FailedValue(
                 $exception->getMessage(),
                 $array,
                 null,
@@ -489,6 +499,29 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
         }
         catch (OutOfBoundsException $exception) {
             return $failed_value;
+        }
+    }
+
+    /**
+     * Проверка всех значений массива списком callback-функций.
+     *
+     * @param ListCallables $listCallables
+     * @return bool
+     * @throws stdException
+     */
+    public function Check(ListCallables $listCallables): bool {
+        try {
+            foreach ($this->box as $key => $value) {
+                $this->getValid(
+                    $key,
+                    $listCallables
+                );
+            }
+
+            return true;
+        }
+        catch (\t35\Library\Exceptions\FailedValue $exception) {
+            return false;
         }
     }
 }
