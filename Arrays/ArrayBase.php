@@ -524,4 +524,64 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
             return false;
         }
     }
+
+    /**
+     * Определяет, можно ли считать массив ассоциативным.
+     *
+     * @param array|ArrayBase $arr
+     * @return bool
+     */
+    #[Pure] public static function array_is_assoc(array|ArrayAccess $arr): bool {
+        if ($arr instanceof ArrayBase) {
+            if (\count($arr) == 0) return false;
+            return \t35\Library\array_keys($arr) !== range(0, \count($arr) - 1);
+        }
+
+        if ($arr instanceof ArrayAccess) {
+            if (\t35\Library\count($arr) == 0) return false;
+            return \t35\Library\array_keys($arr) !== range(0, \t35\Library\count($arr) - 1);
+        }
+
+        if ($arr === array()) return false;
+        return \array_keys($arr) !== range(0, \count($arr) - 1);
+    }
+
+    /**
+     * Является ли массив ассоциативным.
+     *
+     * @return bool
+     * @see ArrayBase::array_is_assoc()
+     */
+    #[Pure] public function isAssoc(): bool {
+        return self::array_is_assoc($this->box);
+    }
+
+    /**
+     * Возвращает случайный индекс.
+     *
+     * @return string|int|null
+     */
+    public function randIndex(): string|int|null {
+        $index_num = rand(0, $this->count() - 1);
+
+        $offset = null;
+        for ($i = 0; $i <= $index_num; $i++) {
+            $offset = $this->key();
+            $this->next();
+            if (!$this->valid())
+                $this->rewind();
+        }
+        $this->rewind();
+
+        return $offset;
+    }
+
+    /**
+     * Возвращает случайное значение массива.
+     *
+     * @return mixed
+     */
+    public function randValue(): mixed {
+        return $this->box[$this->randIndex()];
+    }
 }

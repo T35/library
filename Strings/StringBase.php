@@ -9,6 +9,7 @@ use t35\Library\BaseClass;
 use t35\Library\IJSONSerializable;
 use t35\Library\Arrays\ListString;
 use t35\Library\Exceptions\stdException;
+use t35\Library\SimpleLibrary;
 use TypeError;
 use function mb_convert_encoding;
 use function mb_detect_encoding;
@@ -357,10 +358,10 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * Реализация стандартного функционала.
      *
      * @param StringBase $needle
-     * @return int
+     * @return int|false
      * @see mb_strpos()
      */
-    public function strpos(StringBase $needle): int {
+    public function strpos(StringBase $needle): int|false {
         return mb_strpos($this->string, $needle);
     }
 
@@ -368,10 +369,10 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * Реализация стандартного функционала.
      *
      * @param StringBase $needle
-     * @return int
+     * @return int|false
      * @see mb_stripos()
      */
-    public function stripos(StringBase $needle): int {
+    public function stripos(StringBase $needle): int|false {
         return mb_stripos($this->string, $needle);
     }
 
@@ -380,7 +381,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      *
      * @param int $start
      * @param int|null $length
-     * @return $this
+     * @return static
      * @throws stdException
      */
     public function substr(
@@ -394,5 +395,47 @@ class StringBase extends BaseClass implements IJSONSerializable {
                 $length
             )
         );
+    }
+
+    /**
+     * Определяет, является ли строка md5-хешем.
+     *
+     * @param string|StringBase $string
+     * @param bool $case_sensitive
+     * @return bool
+     */
+    public static function stringIsMD5(string|StringBase $string, bool $case_sensitive = false): bool {
+        $pattern = $case_sensitive ? '/^[a-f0-9]{32}$/' : '/^[a-f0-9]{32}$/i';
+        return preg_match($pattern, $string);
+    }
+
+    /**
+     * Является ли строка md5-хешем.
+     *
+     * @param bool $case_sensitive
+     * @return bool
+     */
+    public function isMD5(bool $case_sensitive = false): bool {
+        return self::stringIsMD5($this->string, $case_sensitive);
+    }
+
+    /**
+     * Генерирует пароль по указанному набору символов.
+     *
+     * @param ECharacterSet $characterSet
+     * @param int $length
+     * @return StringBase
+     * @throws stdException
+     */
+    public static function GeneratePassword(
+        ECharacterSet $characterSet,
+        int $length
+    ): StringBase {
+        $password = new StringBase();
+        for($i = 0; $i < $length; $i++) {
+            $password->Postfix($characterSet->toList()->randValue());
+        }
+
+        return $password;
     }
 }

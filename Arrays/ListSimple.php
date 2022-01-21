@@ -23,4 +23,14 @@ class ListSimple extends ArrayBase {
 
         return $this;
     }
+
+    /**
+     * Реализация.
+     *
+     * @return string|int|null
+     * @see ArrayBase::randIndex()
+     */
+    public function randIndex(): string|int|null {
+        return rand(0, $this->count() - 1);
+    }
 }

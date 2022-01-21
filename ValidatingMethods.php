@@ -80,7 +80,7 @@ class ValidatingMethods {
     }
 
     #[Pure] public static function isAssoc(mixed $value): bool {
-        return SimpleLibrary::is_assoc($value);
+        return ArrayBase::array_is_assoc($value);
     }
 
     #[Pure] public static function isAssocOrEmptyArray(mixed $value): bool {

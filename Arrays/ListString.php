@@ -3,8 +3,6 @@
 namespace t35\Library\Arrays;
 
 use InvalidArgumentException;
-use t35\Library\Arrays\ArrayBase;
-use t35\Library\Arrays\ListTyped;
 use t35\Library\Exceptions\stdException;
 use t35\Library\Strings\StringBase;
 use TypeError;
@@ -18,7 +16,7 @@ class ListString extends ListTyped {
      * @param mixed $offset
      * @param mixed $value
      * @return void
-     * @throws \t35\Library\Exceptions\stdException
+     * @throws stdException
      */
     public function offsetSet(mixed $offset, mixed $value): void {
         if (!($value instanceof StringBase)) {

@@ -2,8 +2,6 @@
 
 namespace t35\Library;
 
-use ArrayAccess;
-use JetBrains\PhpStorm\Pure;
 use t35\Library\Arrays\ArrayBase;
 use t35\Library\Exceptions\stdException;
 use t35\Library\Strings\EStringFormat;
@@ -69,27 +67,6 @@ class SimpleLibrary {
     }
 
     /**
-     * Определяет, можно ли считать массив ассоциативным.
-     *
-     * @param array|ArrayBase $arr
-     * @return bool
-     */
-    #[Pure] public static function is_assoc(array|ArrayAccess $arr): bool {
-        if ($arr instanceof ArrayBase) {
-            if (\count($arr) == 0) return false;
-            return array_keys($arr) !== range(0, \count($arr) - 1);
-        }
-
-        if ($arr instanceof ArrayAccess) {
-            if (count($arr) == 0) return false;
-            return array_keys($arr) !== range(0, count($arr) - 1);
-        }
-
-        if ($arr === array()) return false;
-        return \array_keys($arr) !== range(0, \count($arr) - 1);
-    }
-
-    /**
      * Рекурсивный glob.
      *
      * @param string $pattern
@@ -110,15 +87,5 @@ class SimpleLibrary {
         }
 
         return $result;
-    }
-
-    /**
-     * Определяет, является ли строка md5 хешем.
-     *
-     * @param string|StringBase $string
-     * @return bool
-     */
-    public static function IsMd5(string|StringBase $string): bool {
-        return preg_match('/^[a-f0-9]{32}$/', $string);
     }
 }
