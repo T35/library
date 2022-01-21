@@ -111,4 +111,14 @@ class SimpleLibrary {
 
         return $result;
     }
+
+    /**
+     * Определяет, является ли строка md5 хешем.
+     *
+     * @param string|StringBase $string
+     * @return bool
+     */
+    public static function IsMd5(string|StringBase $string): bool {
+        return preg_match('/^[a-f0-9]{32}$/', $string);
+    }
 }
