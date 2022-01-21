@@ -400,20 +400,17 @@ class StringBase extends BaseClass implements IJSONSerializable {
     /**
      * Реализация стандартного функционала.
      *
-     * @param string|StringBase $replace
+     * @param string|StringBase $insert
      * @param int $offset
-     * @param int|null $length
-     * @return $this
-     * @throws stdException
+     * @return void
      */
-    public function substr_replace(
-        string|StringBase $replace,
-        int               $offset,
-        int|null          $length = null
-    ): static {
-        $startString = mb_substr($this->string, 0, $offset);
-        $endString = mb_substr($this->string, $offset + $length, mb_strlen($this->string));
-        return $this->similar($startString . $replace . $endString);
+    public function substr_insert(
+        string|StringBase $insert,
+        int               $offset
+    ): void {
+        $prefixString = mb_substr($this->string, 0, $offset);
+        $postfixString = mb_substr($this->string, $offset);
+        $this->string = $prefixString . $insert . $postfixString;
     }
 
     /**
