@@ -398,7 +398,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
     }
 
     /**
-     * Реализация стандартного функционала.
+     * Вставляет подстроку на позицию в базовой строке.
      *
      * @param string|StringBase $insert
      * @param int $offset
