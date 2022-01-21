@@ -398,6 +398,25 @@ class StringBase extends BaseClass implements IJSONSerializable {
     }
 
     /**
+     * Реализация стандартного функционала.
+     *
+     * @param string|StringBase $string
+     * @param string|StringBase $replace
+     * @param int $offset
+     * @param int|null $length
+     * @return $this
+     * @throws stdException
+     */
+    public function substr_replace(
+        string|StringBase $string,
+        string|StringBase $replace,
+        int               $offset,
+        int|null          $length = null
+    ): static {
+        return $this->similar(substr_replace($string, $replace, $offset, $length));
+    }
+
+    /**
      * Определяет, является ли строка md5-хешем.
      *
      * @param string|StringBase $string
@@ -429,10 +448,10 @@ class StringBase extends BaseClass implements IJSONSerializable {
      */
     public static function GeneratePassword(
         ECharacterSet $characterSet,
-        int $length
+        int           $length
     ): StringBase {
         $password = new StringBase();
-        for($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $length; $i++) {
             $password->Postfix($characterSet->toList()->randValue());
         }
 
