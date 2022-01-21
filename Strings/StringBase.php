@@ -411,7 +411,9 @@ class StringBase extends BaseClass implements IJSONSerializable {
         int               $offset,
         int|null          $length = null
     ): static {
-        return $this->similar(substr_replace($this->string, $replace, $offset, $length));
+        $startString = mb_substr($this->string, 0, $offset);
+        $endString = mb_substr($this->string, $offset + $length, mb_strlen($this->string));
+        return $this->similar($startString . $replace . $endString);
     }
 
     /**
