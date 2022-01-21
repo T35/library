@@ -400,7 +400,6 @@ class StringBase extends BaseClass implements IJSONSerializable {
     /**
      * Реализация стандартного функционала.
      *
-     * @param string|StringBase $string
      * @param string|StringBase $replace
      * @param int $offset
      * @param int|null $length
@@ -408,12 +407,11 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * @throws stdException
      */
     public function substr_replace(
-        string|StringBase $string,
         string|StringBase $replace,
         int               $offset,
         int|null          $length = null
     ): static {
-        return $this->similar(substr_replace($string, $replace, $offset, $length));
+        return $this->similar(substr_replace($this->string, $replace, $offset, $length));
     }
 
     /**
