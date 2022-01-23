@@ -13,6 +13,16 @@ class ListString extends ListTyped {
     }
 
     /**
+     * Реализация.
+     *
+     * @param ArrayBase|array|null $value
+     * @return static
+     */
+    public function similar(ArrayBase|array $value = null): static {
+        return new static($value);
+    }
+
+    /**
      * @param mixed $offset
      * @param mixed $value
      * @return void

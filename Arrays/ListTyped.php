@@ -20,20 +20,6 @@ class ListTyped extends ArrayTyped {
     }
 
     /**
-     * Применяет callback-функцию ко всем элементам массива. Возвращает себя.
-     *
-     * @param callable $callback Должен принимать один параметр: значение.
-     * @return $this
-     */
-    public function apply(callable $callback): static {
-        foreach ($this->box as $key => $value) {
-            $this->box[$key] = $callback($value);
-        }
-
-        return $this;
-    }
-
-    /**
      * Реализация.
      *
      * @return string|int|null

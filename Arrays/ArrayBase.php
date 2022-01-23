@@ -236,13 +236,13 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
      * Возвращает новый массив, отобранный по списку ключей.
      * Если список обязательный, вернет пустой массив, если не все поля найдены.
      *
-     * @param ListWithRequireStatus $list Список ключей с информацией об обязательности. Список может быть "белым" или "черным".
+     * @param ListWithInclusionStatus $list Список ключей с информацией об обязательности. Список может быть "белым" или "черным".
      * @return static
      * @see EInclusionStatus
-     * @see ListWithRequireStatus
+     * @see ListWithInclusionStatus
      */
     public function filterByList(
-        ListWithRequireStatus $list
+        ListWithInclusionStatus $list
     ): static {
         $callbackInList = new Callback\CallbackValueInList($list);
         $new = $this->filter($callbackInList, ARRAY_FILTER_USE_KEY);
@@ -261,6 +261,7 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
      * @return static
      * @throws stdException|\t35\Library\Exceptions\FailedValue
      * @see FailedValue
+     * @see ArrayValidScheme
      */
     public function filterByValidScheme(
         ArrayValidScheme $validScheme,
@@ -268,18 +269,24 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     ): mixed {
         $new = $this->similar();
 
-        foreach ($this->filterByList(new ListWithRequireStatus($validScheme->array_keys(), $validScheme->isStrict() ? EInclusionStatus::Require : EInclusionStatus::WhiteList)) as $key => $value) {
-            if (($new_value = $this->getValid($key, $validScheme[$key], new FailedValue(null))) !== null)
-                $new[$key] = $new_value;
-            elseif ($validScheme->isStrict())
-                return $failedValue->Get(new \t35\Library\Exceptions\FailedValue(
-                    'Массив не прошел проверку callback-функцией(-ями)',
-                    [
-                        'key' => $key,
-                        'callbacks' => $validScheme[$key],
-                        'box' => $this->box
-                    ]
-                ));
+        foreach ($filtered = $this->filterByList(new ListWithInclusionStatus($validScheme->array_keys(), $validScheme->inclusionStatus())) as $key => $value) {
+            if ($validScheme->inclusionStatus() == EInclusionStatus::BlackList) {
+                $new->putAll($filtered);
+                break;
+            }
+            else {
+                if (($new_value = $this->getValid($key, $validScheme[$key], new FailedValue(null))) !== null)
+                    $new[$key] = $new_value;
+                elseif ($validScheme->inclusionStatus() == EInclusionStatus::Require)
+                    return $failedValue->Get(new \t35\Library\Exceptions\FailedValue(
+                        'Массив не прошел проверку callback-функцией(-ями)',
+                        [
+                            'key' => $key,
+                            'callbacks' => $validScheme[$key],
+                            'box' => $this->box
+                        ]
+                    ));
+            }
         }
 
         if (!$new->count())
@@ -499,29 +506,6 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
         }
         catch (OutOfBoundsException $exception) {
             return $failed_value;
-        }
-    }
-
-    /**
-     * Проверка всех значений массива списком callback-функций.
-     *
-     * @param ListCallables $listCallables
-     * @return bool
-     * @throws stdException
-     */
-    public function Check(ListCallables $listCallables): bool {
-        try {
-            foreach ($this->box as $key => $value) {
-                $this->getValid(
-                    $key,
-                    $listCallables
-                );
-            }
-
-            return true;
-        }
-        catch (\t35\Library\Exceptions\FailedValue $exception) {
-            return false;
         }
     }
 

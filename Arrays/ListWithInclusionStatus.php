@@ -9,7 +9,7 @@ use t35\Library\EInclusionStatus;
 /**
  * Реализация списка с флагом: обязательный, "белый" или "черный".
  */
-class ListWithRequireStatus extends ListUnique {
+class ListWithInclusionStatus extends ListUnique {
     /**
      * Возвращает статус списка: обязательный, "белый" или "черный".
      *
