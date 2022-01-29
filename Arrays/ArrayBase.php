@@ -370,11 +370,11 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     /**
      * Возвращает массив в виде var_dump-строки в нужном формате.
      *
-     * @param EStringFormat $format
+     * @param \t35\Library\Strings\EStringFormat $format
      * @return string
      * @throws stdException
      */
-    public function toVarDump(EStringFormat $format = EStringFormat::None): string {
+    public function toVarDump(\t35\Library\Strings\EStringFormat $format = \t35\Library\Strings\EStringFormat::None): string {
         return SimpleLibrary::GetVarDump($this->box, $format);
     }
 
@@ -398,10 +398,12 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     /**
      * Возвращает реализацию массива в виде JSON-строки.
      *
+     * @param int $json_flags Флаги для функции json_encode.
      * @return string
+     * @see json_encode()
      */
-    public function toJSON(): string {
-        return json_encode($this->JSONSerialize(), JSON_UNESCAPED_UNICODE);
+    public function toJSON(int $json_flags = JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR): string {
+        return json_encode($this->JSONSerialize(), $json_flags);
     }
 
     /**

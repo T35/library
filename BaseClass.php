@@ -8,8 +8,8 @@ class BaseClass {
     /**
      * Возвращает имя класса в виде класса StringBase.
      *
-     * @see StringBase
-     * @return StringBase
+     * @return \t35\Library\Strings\StringBase
+     *@see \t35\Library\Strings\StringBase
      */
     public static function class(): StringBase {
         return new StringBase(static::class);

@@ -25,7 +25,7 @@ class SimpleLibrary {
     /**
      * @param mixed $var
      * @param EStringFormat $format
-     * @return StringBase
+     * @return \t35\Library\Strings\StringBase
      * @throws stdException
      */
     public static function GetVarDump(mixed $var, EStringFormat $format = EStringFormat::HTML): StringBase {

@@ -9,7 +9,6 @@ use t35\Library\BaseClass;
 use t35\Library\IJSONSerializable;
 use t35\Library\Arrays\ListString;
 use t35\Library\Exceptions\stdException;
-use t35\Library\SimpleLibrary;
 use TypeError;
 use function mb_convert_encoding;
 use function mb_detect_encoding;
@@ -260,7 +259,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
      * @param null $context
      * @param int $offset
      * @param int|null $length
-     * @return StringBase
+     * @return static
      * @throws stdException
      * @see file_get_contents()
      */
@@ -272,7 +271,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
                    $context = null,
         int        $offset = 0,
         int        $length = null
-    ): StringBase {
+    ): static {
         try {
             $string = file_get_contents(
                 $filename,
@@ -302,7 +301,7 @@ class StringBase extends BaseClass implements IJSONSerializable {
             );
         }
 
-        return new StringBase($string, $convertToUTF8, $listEncodings);
+        return new static($string, $convertToUTF8, $listEncodings);
     }
 
     /**

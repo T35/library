@@ -2,8 +2,8 @@
 
 namespace t35\Library\Strings;
 
-use t35\Library\Arrays\ArrayBase;
 use t35\Library\Arrays\ListString;
+use t35\Library\Strings\StringBase;
 use t35\Library\Exceptions\stdException;
 
 enum ECharacterSet: string {
