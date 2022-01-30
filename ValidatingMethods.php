@@ -26,6 +26,7 @@ class ValidatingMethods {
     public const VM_IS_ASSOC = [ValidatingMethods::class, 'isAssoc'];
     public const VM_IS_ASSOC_OR_EMPTY_ARRAY = [ValidatingMethods::class, 'isAssocOrEmptyArray'];
     public const VM_IS_ARRAY = [ValidatingMethods::class, 'isArray'];
+    public const VM_IS_TRUE = [ValidatingMethods::class, 'isTrue'];
 
     public static function isSystemName(mixed $value): bool {
         return is_string($value)
@@ -91,6 +92,10 @@ class ValidatingMethods {
 
     public static function isArray(mixed $value): bool {
         return is_array($value);
+    }
+
+    public static function isTrue(mixed $value): bool {
+        return (bool) $value;
     }
 
     /**

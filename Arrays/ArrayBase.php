@@ -496,6 +496,23 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     }
 
     /**
+     * Возвращает значение проверенное на наличие и значимость.
+     * Упрощенная getValid.
+     *
+     * @param mixed $key
+     * @param FailedValue $failedValue
+     * @return mixed
+     * @throws stdException
+     * @see ArrayBase::getValid()
+     */
+    public function getTrueValid(
+        mixed         $key,
+        FailedValue   $failedValue = new FailedValue(null, EFailedValueType::Exception)
+    ): mixed {
+        return $this->getValid($key, new ListCallables([ValidatingMethods::VM_IS_TRUE]), $failedValue);
+    }
+
+    /**
      * Безопасный offsetGet. Если переданного ключа массива не существует, вернет $failed_value.
      *
      * @param mixed $offset
