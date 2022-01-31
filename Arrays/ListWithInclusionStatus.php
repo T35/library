@@ -2,8 +2,6 @@
 
 namespace t35\Library\Arrays;
 
-use t35\Library\Arrays\ArrayBase;
-use t35\Library\Arrays\ListUnique;
 use t35\Library\EInclusionStatus;
 
 /**
@@ -16,12 +14,12 @@ class ListWithInclusionStatus extends ListUnique {
      * @return EInclusionStatus
      */
     public function requireStatus(): EInclusionStatus {
-        return $this->requireStatus;
+        return $this->inclusionStatus;
     }
 
     public function __construct(
         ArrayBase|array            $value = null,
-        protected EInclusionStatus $requireStatus = EInclusionStatus::WhiteList,
+        protected EInclusionStatus $inclusionStatus = EInclusionStatus::WhiteList,
     ) {
         parent::__construct($value);
     }

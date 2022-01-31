@@ -13,11 +13,11 @@ use t35\Library\Callback;
 use t35\Library\EFailedValueType;
 use t35\Library\EInclusionStatus;
 use t35\Library\FailedValue;
-use t35\Library\Strings\EStringFormat;
 use t35\Library\IJSONSerializable;
 use t35\Library\SimpleLibrary;
 use t35\Library\Exceptions\stdException;
 use t35\Library\ValidatingMethods;
+use t35\Library\Strings;
 use function array_key_exists;
 use function array_keys;
 use function in_array;
@@ -61,6 +61,15 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
      */
     public function similar(array|ArrayBase $value = null): static {
         return new static($value);
+    }
+
+    /**
+     * Возвращает копию объекта-массива.
+     *
+     * @return static
+     */
+    public function copy(): static {
+        return $this->similar($this->box);
     }
 
     /**
@@ -236,18 +245,18 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
      * Возвращает новый массив, отобранный по списку ключей.
      * Если список обязательный, вернет пустой массив, если не все поля найдены.
      *
-     * @param ListWithInclusionStatus $list Список ключей с информацией об обязательности. Список может быть "белым" или "черным".
+     * @param ListWithInclusionStatus $keyList Список ключей с информацией об обязательности. Список может быть "белым" или "черным".
      * @return static
      * @see EInclusionStatus
      * @see ListWithInclusionStatus
      */
-    public function filterByList(
-        ListWithInclusionStatus $list
+    public function filterByKeyList(
+        ListWithInclusionStatus $keyList
     ): static {
-        $callbackInList = new Callback\CallbackValueInList($list);
+        $callbackInList = new Callback\CallbackValueInList($keyList);
         $new = $this->filter($callbackInList, ARRAY_FILTER_USE_KEY);
-        if ($list->requireStatus() == EInclusionStatus::Require) {
-            return $list->count() == $new->count() ? $new : $this->similar();
+        if ($keyList->requireStatus() == EInclusionStatus::Require) {
+            return $keyList->count() == $new->count() ? $new : $this->similar();
         }
 
         return $new;
@@ -269,7 +278,7 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     ): mixed {
         $new = $this->similar();
 
-        foreach ($filtered = $this->filterByList(new ListWithInclusionStatus($validScheme->array_keys(), $validScheme->inclusionStatus())) as $key => $value) {
+        foreach ($filtered = $this->filterByKeyList(new ListWithInclusionStatus($validScheme->array_keys(), $validScheme->inclusionStatus())) as $key => $value) {
             if ($validScheme->inclusionStatus() == EInclusionStatus::BlackList) {
                 $new->putAll($filtered);
                 break;
@@ -370,11 +379,11 @@ class ArrayBase extends BaseClass implements Iterator, ArrayAccess, Countable, I
     /**
      * Возвращает массив в виде var_dump-строки в нужном формате.
      *
-     * @param \t35\Library\Strings\EStringFormat $format
+     * @param Strings\EStringFormat $format
      * @return string
      * @throws stdException
      */
-    public function toVarDump(\t35\Library\Strings\EStringFormat $format = \t35\Library\Strings\EStringFormat::None): string {
+    public function toVarDump(Strings\EStringFormat $format = Strings\EStringFormat::None): string {
         return SimpleLibrary::GetVarDump($this->box, $format);
     }
 
