@@ -74,6 +74,8 @@ class SimpleLibrary {
      * @return ArrayBase
      */
     public static function rglob(string $pattern, int $flags = 0): ArrayBase {
+        $pattern = preg_replace('/\[(.*?)]/', '[[]\1[]]', $pattern);
+
         $result = new ArrayBase();
 
         $result->putAll(glob($pattern, $flags), false);
