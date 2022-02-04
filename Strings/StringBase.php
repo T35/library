@@ -101,6 +101,16 @@ class StringBase extends BaseClass implements IJSONSerializable {
     }
 
     /**
+     * Возвращает копию объекта строки.
+     *
+     * @return $this
+     * @throws stdException
+     */
+    public function copy(): static {
+        return $this->similar($this->string);
+    }
+
+    /**
      * Преобразование значения в объект StringBase static класса.
      * Например, параметры типа string вначале всех методов, для удобства, нужно преобразовать в объект StringBase static класса.
      *
@@ -452,5 +462,93 @@ class StringBase extends BaseClass implements IJSONSerializable {
         }
 
         return $password;
+    }
+
+    /**
+     * Реализация стандартной функции.
+     *
+     * @param string $regExpPattern
+     * @param $matches
+     * @param int $flags
+     * @param int $offset
+     * @return bool
+     * @throws stdException
+     * @see preg_match()
+     */
+    public function pregMatch(string $regExpPattern, &$matches = null, int $flags = 0, int $offset = 0): bool {
+        if (($result = preg_match($regExpPattern, $this->string, $matches, $flags, $offset)) === false) {
+            throw new stdException(
+                'Ошибка PREG_MATCH. [' . $regExpPattern . ']'
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Реализация стандартной функции.
+     *
+     * @param string|array $regExpPattern
+     * @param string|array $replacement
+     * @param int $limit
+     * @param int|null $count
+     * @return static
+     * @see preg_replace()
+     */
+    public function pregReplace(
+        string|array $regExpPattern,
+        string|array $replacement,
+        int $limit = -1,
+        int &$count = null
+    ): static {
+        $this->string = preg_replace($regExpPattern, $replacement, $this->string, $limit, $count);
+        return $this;
+    }
+
+    /**
+     * Возвращает новый объект с примененным методом pregReplace.
+     *
+     * @param string|array $regExpPattern
+     * @param string|array $replacement
+     * @param int $limit
+     * @param int|null $count
+     * @return $this
+     * @throws stdException
+     * @see StringBase::pregReplace()
+     */
+    public function pregReplaced(
+        string|array $regExpPattern,
+        string|array $replacement,
+        int $limit = -1,
+        int &$count = null
+    ): static {
+        return $this->copy()->pregReplace($regExpPattern, $replacement, $limit, $count);
+    }
+
+    /**
+     * Стирает указанную регулярным выражением часть строки.
+     *
+     * @param string $regExpPattern
+     * @return static
+     * @throws stdException
+     */
+    public function pregErase(string $regExpPattern): static {
+        $this->string = preg_replace($regExpPattern, '', $this->string)
+            ?? throw new stdException(
+                'Ошибка PREG_REPLACE. [' . $regExpPattern . ']'
+            );
+        return $this;
+    }
+
+    /**
+     * Возвращает новый объект строки со стертой частью, указанной в регулярном выражении.
+     *
+     * @param string $regExpPattern
+     * @return $this
+     * @throws stdException
+     * @see StringBase::pregErase()
+     */
+    public function pregErased(string $regExpPattern): static {
+        return $this->copy()->pregErase($regExpPattern);
     }
 }
